@@ -2,7 +2,6 @@ package is.hi.hbv.kjarninn;
 
 import java.io.File;
 import android.content.Intent;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -16,25 +15,36 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
+        //HAHATEST
         
         //Accessing Internal Storage and fetching files.
         Log.e("Step 1", "Done");
-        File storageDir = getFilesDir(); 
-        Log.e("Step 2", storageDir.getName());
+        File storageDir = getFilesDir();
+        
+        Log.e("Storage location", "is.hi.hbv.kjarninn/"+storageDir.getName());
         File[] list=storageDir.listFiles();
-        Log.e("Step 3", "Done");
+        Log.e("Getting file list:", "Done");
         
         Log.e("Files", "Size: "+ list.length);
         for (int i=0; i < list.length; i++)
         {
-        	Log.e("Loop",""+i);
-            Log.e("Files", "FileName:" + list[i].getName());
+            Log.e("Filename:", list[i].getName());
         }
         
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setDataAndType(Uri.fromFile(list[0]),"application/pdf");
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-        startActivity(intent);
+        //open file#0 in PDF reader CAUSES CRASH!
+        try{
+	        Intent intent = new Intent(Intent.ACTION_VIEW);
+	        intent.setDataAndType(Uri.fromFile(list[0]),"application/pdf");
+	        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+	        startActivity(intent);
+        }
+        catch (Exception e) 
+        {
+        	Log.e("Something went wrong!", "Error log below:");
+        	e.printStackTrace();
+        }
+        
+        
     }
 
 
