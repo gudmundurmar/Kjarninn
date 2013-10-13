@@ -14,35 +14,13 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        //HAHATEST
-        
-        //Accessing Internal Storage and fetching files.
-        Log.e("Step 1", "Done");
+         
         File storageDir = getFilesDir();
-        
-        Log.e("Storage location", "is.hi.hbv.kjarninn/"+storageDir.getName());
-        File[] list=storageDir.listFiles();
-        Log.e("Getting file list:", "Done");
-        
-        Log.e("Files", "Size: "+ list.length);
-        for (int i=0; i < list.length; i++)
-        {
-            Log.e("Filename:", list[i].getName());
-        }
-        
-        //open file#0 in PDF reader CAUSES CRASH!
-        try{
-	        Intent intent = new Intent(Intent.ACTION_VIEW);
-	        intent.setDataAndType(Uri.fromFile(list[0]),"application/pdf");
-	        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-	        startActivity(intent);
-        }
-        catch (Exception e) 
-        {
-        	Log.e("Something went wrong!", "Error log below:");
-        	e.printStackTrace();
-        }
+       localstorage localClass = new localstorage();
+       
+       File[] fileList = localClass.FetchFiles(storageDir);
+       
+       OpenPDF(fileList[0]);
         
         
     }
@@ -56,6 +34,24 @@ public class MainActivity extends Activity {
         
         
         return true;
+    }
+    
+    
+    //Opens the filz pdf File in a PDF reader.
+    public void OpenPDF(File filz) {
+ 	   
+        try
+        {
+	        Intent intent = new Intent(Intent.ACTION_VIEW);
+	        intent.setDataAndType(Uri.fromFile(filz),"application/pdf");
+	        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+	        startActivity(intent);
+        }
+        catch (Exception e) 
+        {
+        	Log.e("Something went wrong!", "Error log below:");
+        	e.printStackTrace();
+        }  
     }
     
 }
