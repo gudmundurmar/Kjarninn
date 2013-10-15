@@ -10,13 +10,13 @@ public class localstorage {
 	// returns: File[] containing files in the directory.
 	public File[] FetchFiles(File dir) {
 		
-        Log.e("Storage location", "is.hi.hbv.kjarninn/"+dir.getName());
+        Log.d("Storage location", "is.hi.hbv.kjarninn/"+dir.getName());
         File[] list=dir.listFiles();
-        Log.e("Getting file list:", "Done");     
-        Log.e("Files", "Size: "+ list.length);
+        Log.d("Getting file list:", "Done");     
+        Log.d("Files", "Size: "+ list.length);
         for (int i=0; i < list.length; i++)
         {
-            Log.e("Filename:", list[i].getName());
+            Log.d("Filename:", list[i].getName());
         }
 		return list;
 	}
