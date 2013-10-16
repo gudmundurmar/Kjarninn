@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.ActionBar.LayoutParams;
@@ -23,6 +22,7 @@ import android.net.Uri;
 
 public class MainActivity extends Activity {
 
+	
 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,33 +31,46 @@ public class MainActivity extends Activity {
  
         File storageDir = getFilesDir();
         localstorage localClass = new localstorage();
+        
+        Thread fetch_thread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    try {
+                 	   Log.e("Step:","1");
+                        FileOutputStream fos = openFileOutput("Book.pdf", Context.MODE_PRIVATE);
+                        Log.e("Step:","2");
+                        URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/09/12_09_2013.pdf");
+                        Log.e("Step:","3");
+                        URLConnection urlConnection = url.openConnection();
+                        Log.e("Step:","4");
+                        urlConnection.connect();
+                        Log.e("Step:","5");
 
-       try {
-    	   Log.e("Step:","1");
-           FileOutputStream fos = openFileOutput("Book.pdf", Context.MODE_PRIVATE);
-           Log.e("Step:","2");
-           URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/09/12_09_2013.pdf");
-           Log.e("Step:","3");
-           URLConnection urlConnection = url.openConnection();
-           Log.e("Step:","4");
-           urlConnection.connect();
-           Log.e("Step:","5");
+                        InputStream input = url.openStream();
+                        Log.e("Step:","6");
 
-           InputStream input = url.openStream();
-           Log.e("Step:","6");
+                         byte[] buffer = new byte[1024];
+                            int read;
+                            while ((read = input.read(buffer)) != -1) {
+                                fos.write(buffer, 0, read);
+                            }
+                            fos.close();
+                            input.close();
 
-            byte[] buffer = new byte[1024];
-               int read;
-               while ((read = input.read(buffer)) != -1) {
-                   fos.write(buffer, 0, read);
-               }
-               fos.close();
-               input.close();
+                    } 
+                    catch (Exception e) {
+                 	   Log.e("Something broke while fetching PDF", e.toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
-       } 
-       catch (Exception e) {
-    	   Log.e("Something broke while fetching PDF", e.toString());
-       }
+        fetch_thread.start();
+
+
        
        
        
