@@ -34,10 +34,16 @@ public class MainActivity extends Activity {
         
         Thread fetch_thread = new Thread(new Runnable(){
             @Override
+            /**
+             * @author GMG Johannes er flottur
+             */
             public void run() {
                 try {
                     try {
                         FileOutputStream fos = openFileOutput("Book.pdf", Context.MODE_PRIVATE);
+                        String path = getFilesDir().getAbsolutePath() + "/Book.pdf"; // path to the root of internal memory.
+                        File f = new File(path);
+                        f.setReadable(true, false);
                         URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/09/12_09_2013.pdf");
                         URLConnection urlConnection = url.openConnection();
                         urlConnection.connect();
