@@ -28,22 +28,23 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        Context context = getBaseContext();
-        ContextWrapper cw = new ContextWrapper(context);
-        File storageDir = cw.getFilesDir();
+ 
+        File storageDir = getFilesDir();
         localstorage localClass = new localstorage();
-       
-       
-       storageDir.mkdirs();
-       try {
 
-           FileOutputStream fos = new FileOutputStream(storageDir);
-           URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/10/2013_10_031.pdf");
+       try {
+    	   Log.e("Step:","1");
+           FileOutputStream fos = openFileOutput("Book.pdf", Context.MODE_PRIVATE);
+           Log.e("Step:","2");
+           URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/09/12_09_2013.pdf");
+           Log.e("Step:","3");
            URLConnection urlConnection = url.openConnection();
+           Log.e("Step:","4");
            urlConnection.connect();
+           Log.e("Step:","5");
 
            InputStream input = url.openStream();
+           Log.e("Step:","6");
 
             byte[] buffer = new byte[1024];
                int read;
@@ -53,10 +54,9 @@ public class MainActivity extends Activity {
                fos.close();
                input.close();
 
-
-
-       } catch (Exception e) {
-
+       } 
+       catch (Exception e) {
+    	   Log.e("Something broke while fetching PDF", e.toString());
        }
        
        
