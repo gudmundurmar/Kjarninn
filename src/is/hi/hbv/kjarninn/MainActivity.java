@@ -10,9 +10,12 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -21,16 +24,27 @@ import android.widget.LinearLayout;
 import android.net.Uri;
 
 public class MainActivity extends Activity {
-
+	final Handler mHandler = new Handler();
 	
-
+	File storageDir = getFilesDir();
+    localstorage localClass = new localstorage();
+	
+	// Create runnable for posting
+    final Runnable mUpdateResults = new Runnable() {
+        public void run() {
+            updateResultsInUi();
+        }
+    };
+	
+	/**
+	 * 
+	 */
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
  
-        File storageDir = getFilesDir();
-        localstorage localClass = new localstorage();
+        
         
         Thread fetch_thread = new Thread(new Runnable(){
             @Override
@@ -66,51 +80,47 @@ public class MainActivity extends Activity {
                     e.printStackTrace();
                 }
             }
-        });
-
-        fetch_thread.start();
-
-
-       
-       
-       
-       final File[] fileList = localClass.FetchFiles(storageDir);
-       String[] filenames = localClass.FetchNames(storageDir);
-       
-       LinearLayout ll = (LinearLayout)findViewById(R.id.books);
-       LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-       
-       List<Button> buttons = new ArrayList<Button>();
-       
-       for (int i=0; i < fileList.length; i++)
-       {
-    	   Button myButton = new Button(this);
-    	   //Button ids in books (view) will start at 1000 
-    	   myButton.setId(1000+i);
-           myButton.setText(filenames[i]);
-           myButton.setOnClickListener(new Button.OnClickListener() {
-               public void onClick(View ll) {
-                   Log.d("Button Pressed Id:", String.valueOf(ll.getId()));
-                   Log.d("Filelist0=",fileList[0].getName());
-                   OpenPDF(fileList[0]);
-               }
-           });
-           ll.addView(myButton, lp);
-           buttons.add(myButton);
-       }
-       for (Button b:buttons){
-    	   Log.d("Id of Button " , String.valueOf(b.getId()));
-       }
-       
-       
-
-       
-       
-           
+       });
         
+       fetch_thread.start();
+        
+       //makeButtons();
     }
+	
+	public void makeButtons() {
+		final File[] fileList = localClass.FetchFiles(storageDir);
+	    String[] filenames = localClass.FetchNames(storageDir);
+	       
+	       LinearLayout ll = (LinearLayout)findViewById(R.id.books);
+	       LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+	       
+	       List<Button> buttons = new ArrayList<Button>();
+	       
+	       for (int i=0; i < fileList.length; i++)
+	       {
+	    	   Button myButton = new Button(this);
+	    	   //Button ids in books (view) will start at 1000 
+	    	   myButton.setId(1000+i);
+	           myButton.setText(filenames[i]);
+	           myButton.setOnClickListener(new Button.OnClickListener() {
+	               public void onClick(View ll) {
+	                   Log.d("Button Pressed Id:", String.valueOf(ll.getId()));
+	                   Log.d("Filelist0=",fileList[0].getName());
+	                   OpenPDF(fileList[0]);
+	               }
+	           });
+	           ll.addView(myButton, lp);
+	           buttons.add(myButton);
+	       }
+	       for (Button b:buttons){
+	    	   Log.d("Id of Button " , String.valueOf(b.getId()));
+	       }
+	}
 
-
+	private void updateResultsInUi() {
+		makeButtons();
+    }
+	
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

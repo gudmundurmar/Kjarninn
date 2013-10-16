@@ -6,8 +6,12 @@ import android.util.Log;
 public class localstorage {
 	
 	
-	//Usage <localstorage instance>.FetchFiles( (File) directory)
-	// returns: File[] containing files in the directory.
+	/**
+	 * Usage <localstorage instance>.FetchFiles( (File) directory)
+	 * returns: File[] containing files in the directory.
+	 * @param dir
+	 * @return
+	 */
 	public File[] FetchFiles(File dir) {
 		
         Log.d("Storage location", "is.hi.hbv.kjarninn/"+dir.getName());
@@ -21,7 +25,11 @@ public class localstorage {
 		return list;
 	}
 	
-	//Returns names of files in directory
+	/**
+	 * Returns names of files in directory
+	 * @param dir
+	 * @return
+	 */
 	public String[] FetchNames(File dir) {
         File[] list=dir.listFiles();
         String[] names = new String[list.length];
