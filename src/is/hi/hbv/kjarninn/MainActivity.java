@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import android.content.Intent;
 import android.os.Bundle;
-import android.annotation.SuppressLint;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.util.Log;
@@ -17,9 +16,7 @@ import android.net.Uri;
 
 public class MainActivity extends Activity {
 
-	//Duno tharf til ad LayoutParams virki
-    @SuppressLint("NewApi")
-    
+
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
