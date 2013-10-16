@@ -1,8 +1,15 @@
 package is.hi.hbv.kjarninn;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.ActionBar.LayoutParams;
@@ -21,9 +28,38 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-         
-        File storageDir = getFilesDir();
-       localstorage localClass = new localstorage();
+        
+        Context context = getBaseContext();
+        ContextWrapper cw = new ContextWrapper(context);
+        File storageDir = cw.getFilesDir();
+        localstorage localClass = new localstorage();
+       
+       
+       storageDir.mkdirs();
+       try {
+
+           FileOutputStream fos = new FileOutputStream(storageDir);
+           URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/10/2013_10_031.pdf");
+           URLConnection urlConnection = url.openConnection();
+           urlConnection.connect();
+
+           InputStream input = url.openStream();
+
+            byte[] buffer = new byte[1024];
+               int read;
+               while ((read = input.read(buffer)) != -1) {
+                   fos.write(buffer, 0, read);
+               }
+               fos.close();
+               input.close();
+
+
+
+       } catch (Exception e) {
+
+       }
+       
+       
        
        final File[] fileList = localClass.FetchFiles(storageDir);
        String[] filenames = localClass.FetchNames(storageDir);
