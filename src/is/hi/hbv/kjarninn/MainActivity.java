@@ -37,18 +37,12 @@ public class MainActivity extends Activity {
             public void run() {
                 try {
                     try {
-                 	   Log.e("Step:","1");
                         FileOutputStream fos = openFileOutput("Book.pdf", Context.MODE_PRIVATE);
-                        Log.e("Step:","2");
                         URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/09/12_09_2013.pdf");
-                        Log.e("Step:","3");
                         URLConnection urlConnection = url.openConnection();
-                        Log.e("Step:","4");
                         urlConnection.connect();
-                        Log.e("Step:","5");
 
                         InputStream input = url.openStream();
-                        Log.e("Step:","6");
 
                          byte[] buffer = new byte[1024];
                             int read;
@@ -91,7 +85,8 @@ public class MainActivity extends Activity {
            myButton.setOnClickListener(new Button.OnClickListener() {
                public void onClick(View ll) {
                    Log.d("Button Pressed Id:", String.valueOf(ll.getId()));
-                   OpenPDF(fileList[ll.getId()-1000]);
+                   Log.d("Filelist0=",fileList[0].getName());
+                   OpenPDF(fileList[0]);
                }
            });
            ll.addView(myButton, lp);
