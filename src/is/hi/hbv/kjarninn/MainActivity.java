@@ -50,13 +50,7 @@ public class MainActivity extends Activity {
        }
        for (Button b:buttons){
     	   Log.d("Id of Button " , String.valueOf(b.getId()));
-       }
-       
-       
-
-       
-       
-           
+       }    
         
     }
 
