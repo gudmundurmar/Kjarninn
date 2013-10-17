@@ -7,15 +7,12 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
-import android.app.DownloadManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -31,7 +28,7 @@ public class MainActivity extends Activity {
 	final Handler mHandler = new Handler();
 	
 	/**
-	 *  Create runnable for posting
+	 *  Create runnable for asynchronous thread
 	 */
     final Runnable mUpdateResults = new Runnable() {
         public void run() {
@@ -40,7 +37,8 @@ public class MainActivity extends Activity {
     };
 	
 	/**
-	 * Kicking things off ..
+	 * Responsible for making appropriate buttons depending on what 
+	 * files are already being stored in the application
 	 */
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
