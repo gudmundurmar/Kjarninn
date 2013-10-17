@@ -25,18 +25,22 @@ import android.net.Uri;
 
 public class MainActivity extends Activity {
 	
-	// Need handler for callbacks to the UI thread
+	/**
+	 *  Handler for callbacks to the UI thread
+	 */
 	final Handler mHandler = new Handler();
 	
-	// Create runnable for posting
+	/**
+	 *  Create runnable for posting
+	 */
     final Runnable mUpdateResults = new Runnable() {
         public void run() {
-            updateResultsInUi();
+        	whenDownloadComplete();
         }
     };
 	
 	/**
-	 * Vantar lysingu
+	 * Kicking things off ..
 	 */
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +50,7 @@ public class MainActivity extends Activity {
 		File storageDir = getFilesDir();
 		localstorage localClass = new localstorage();
 		
-		startLongRunningOperation();
+		startDownloadingPDF();
 		
 		final File[] fileList = localClass.FetchFiles(storageDir);
 		String[] filenames = localClass.FetchNames(storageDir);
@@ -77,12 +81,13 @@ public class MainActivity extends Activity {
 		}
     }
 	
-	protected void startLongRunningOperation() {
+	/**
+	 * Creates a new thread for downloading pdf file.
+	 * When done downloading it calls whenDownloadComplete() where we update the UI 
+	 */
+	protected void startDownloadingPDF() {
 		// Fire off a thread to do some work that we shouldn't do directly in the UI thread
 		Thread t = new Thread(new Runnable(){
-			/**
-             * Vantar lysingu
-             */
 			@Override
             public void run() {
                 try {
@@ -118,25 +123,29 @@ public class MainActivity extends Activity {
        t.start();	
 	}
 	
-
-	private void updateResultsInUi() {
-		Log.d("this state reached","annar streengur");
+	/**
+	 * Function for updating the UI after download of pdf has completed
+	 */
+	private void whenDownloadComplete() {
+		// update the UI here
+		Log.d("This state reached.","yayy");
     }
 	
+	/**
+	 * Options menu stuff
+	 */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         
-        
-        
         return true;
     }
     
-    
-    //Opens the filz pdf File in a PDF reader.
-    public void OpenPDF(File filz) {
- 	   
+    /**
+     * Opens the filz pdf file in a PDF reader.
+     */
+	public void OpenPDF(File filz) {
         try
         {
 	        Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -150,5 +159,4 @@ public class MainActivity extends Activity {
         	e.printStackTrace();
         }  
     }
-    
 }
