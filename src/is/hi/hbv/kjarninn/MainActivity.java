@@ -44,41 +44,6 @@ public class MainActivity extends Activity {
 	 */
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
-<<<<<<< HEAD
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-         
-        File storageDir = getFilesDir();
-       localstorage localClass = new localstorage();
-       
-       final File[] fileList = localClass.FetchFiles(storageDir);
-       String[] filenames = localClass.FetchNames(storageDir);
-       
-       LinearLayout ll = (LinearLayout)findViewById(R.id.books);
-       LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-       
-       List<Button> buttons = new ArrayList<Button>();
-       
-       for (int i=0; i < fileList.length; i++)
-       {
-    	   Button myButton = new Button(this);
-    	   //Button ids in books (view) will start at 1000 
-    	   myButton.setId(1000+i);
-           myButton.setText(filenames[i]);
-           myButton.setOnClickListener(new Button.OnClickListener() {
-               public void onClick(View ll) {
-                   Log.d("Button Pressed Id:", String.valueOf(ll.getId()));
-                   OpenPDF(fileList[ll.getId()-1000]);
-               }
-           });
-           ll.addView(myButton, lp);
-           buttons.add(myButton);
-       }
-       for (Button b:buttons){
-    	   Log.d("Id of Button " , String.valueOf(b.getId()));
-       }    
-        
-=======
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
@@ -114,7 +79,7 @@ public class MainActivity extends Activity {
 		for (Button b:buttons){
 			Log.d("Id of Button " , String.valueOf(b.getId()));
 		}
->>>>>>> localStorage_save_to_data
+		
     }
 	
 	/**
