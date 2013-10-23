@@ -19,6 +19,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.net.Uri;
+//Navbar
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
+//Navbar
 
 public class MainActivity extends Activity {
 	
@@ -35,6 +40,10 @@ public class MainActivity extends Activity {
         	whenDownloadComplete();
         }
     };
+    
+    //Navbar stuff
+    private String[] drawerListViewItems;
+    private ListView drawerListView;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -44,6 +53,18 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		
+		 // get list items from strings.xml
+        drawerListViewItems = getResources().getStringArray(R.array.navbar_items);
+ 
+        // get ListView defined in activity_main.xml
+        drawerListView = (ListView) findViewById(R.id.left_drawer);
+ 
+        // Set the adapter for the list view
+        drawerListView.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.navbar_items, drawerListViewItems));
+        drawerListView.setOnItemClickListener(new DrawerItemClickListener());
 		
 		List<Button> buttons = new ArrayList<Button>();
 		
@@ -157,4 +178,44 @@ public class MainActivity extends Activity {
         	e.printStackTrace();
         }  
     }
+	
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+
+			@Override
+		    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+		            long arg3) {
+				selectNavbarItem(arg2);
+
+		    }
+
+	}
+
+
+	private void selectNavbarItem(int position) {
+		switch(position) {
+			case 0:
+				Log.d("Navbar Click","Item 0");
+				//Intent a = new Intent(MainActivity.this, Activity1.class);
+		        //startActivity(a);
+		        break;
+			case 1:
+				Log.d("Navbar Click","Item 1");
+				//Intent a = new Intent(MainActivity.this, Activity1.class);
+		        //startActivity(a);
+		        break;
+		    case 2:
+		    	Log.d("Navbar Click","Item 2");
+		    	Intent browserIntent_viewHelp = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg"));
+				startActivity(browserIntent_viewHelp);
+		        break;
+			case 3:
+				Log.d("Navbar Click","Item 3");
+				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is"));
+				startActivity(browserIntent_toSite);
+		        break;
+		    default:
+		}
+	}
+		    
+		    
 }
