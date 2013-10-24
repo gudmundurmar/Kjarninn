@@ -42,8 +42,7 @@ public class MainActivity extends Activity {
     };
     
     //Navbar stuff
-    private String[] drawerListViewItems;
-    private ListView drawerListView;
+    private ListView navbarListView;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -54,17 +53,18 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+        NavbarModel.LoadModel();
+        navbarListView = (ListView) findViewById(R.id.navbar);
+        String[] ids = new String[NavbarModel.Items.size()];
+        for (int i= 0; i < ids.length; i++){
+
+            ids[i] = Integer.toString(i+1);
+        }
+
+        NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
+        navbarListView.setAdapter(adapter);
+        navbarListView.setOnItemClickListener(new DrawerItemClickListener());
 		
-		 // get list items from strings.xml
-        drawerListViewItems = getResources().getStringArray(R.array.navbar_items);
- 
-        // get ListView defined in activity_main.xml
-        drawerListView = (ListView) findViewById(R.id.left_drawer);
- 
-        // Set the adapter for the list view
-        drawerListView.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.navbar_items, drawerListViewItems));
-        drawerListView.setOnItemClickListener(new DrawerItemClickListener());
 		
 		List<Button> buttons = new ArrayList<Button>();
 		
@@ -180,14 +180,11 @@ public class MainActivity extends Activity {
     }
 	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
-
 			@Override
 		    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 		            long arg3) {
 				selectNavbarItem(arg2);
-
 		    }
-
 	}
 
 
