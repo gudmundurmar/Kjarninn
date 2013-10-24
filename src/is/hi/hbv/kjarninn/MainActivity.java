@@ -19,6 +19,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.net.Uri;
+//Navbar
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
+//Navbar
 
 public class MainActivity extends Activity {
 	
@@ -35,6 +40,9 @@ public class MainActivity extends Activity {
         	whenDownloadComplete();
         }
     };
+    
+    //Navbar stuff
+    private ListView navbarListView;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -45,18 +53,32 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+        NavbarModel.LoadModel();
+        navbarListView = (ListView) findViewById(R.id.navbar);
+        String[] ids = new String[NavbarModel.Items.size()];
+        for (int i= 0; i < ids.length; i++){
+
+            ids[i] = Integer.toString(i+1);
+        }
+
+        NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
+        navbarListView.setAdapter(adapter);
+        navbarListView.setOnItemClickListener(new DrawerItemClickListener());
+		
+		
+		List<Button> buttons = new ArrayList<Button>();
+		
 		File storageDir = getFilesDir();
 		localstorage localClass = new localstorage();
 		
-		startDownloadingPDF();
+		// this needs to be bound to a button instead of calling it here
+		startDownloadingPDF("http://kjarninn.is/kerfi/wp-content/uploads/2013/10/2013_10_17.pdf","Utgafa009.pdf");
 		
 		final File[] fileList = localClass.FetchFiles(storageDir);
 		String[] filenames = localClass.FetchNames(storageDir);
 		
 		LinearLayout ll = (LinearLayout)findViewById(R.id.books);
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		
-		List<Button> buttons = new ArrayList<Button>();
 		
 		for (int i=0; i < fileList.length; i++)
 		{
@@ -81,45 +103,43 @@ public class MainActivity extends Activity {
     }
 	
 	/**
+	 * Description:
 	 * Creates a new thread for downloading pdf file.
 	 * When done downloading it calls whenDownloadComplete() where we update the UI 
+	 * String urlToPdf is a web url to the pdf we want to download, String savePdfAs is the
+	 * name of the file we want to save the pdf to
 	 */
-	protected void startDownloadingPDF() {
+	protected void startDownloadingPDF(String urlToPdf,String savePdfAs) {
 		// Fire off a thread to do some work that we shouldn't do directly in the UI thread
-		Thread t = new Thread(new Runnable(){
+		downloadRun p = new downloadRun(urlToPdf, savePdfAs){
 			@Override
-            public void run() {
+			public void run() {
                 try {
-                    try {
-                        FileOutputStream fos = openFileOutput("Book.pdf", Context.MODE_PRIVATE);
-                        String path = getFilesDir().getAbsolutePath() + "/Book.pdf"; // path to the root of internal memory.
-                        File f = new File(path);
-                        f.setReadable(true, false);
-                        URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/09/12_09_2013.pdf");
-                        URLConnection urlConnection = url.openConnection();
-                        urlConnection.connect();
-                        
-                        InputStream input = url.openStream();
-                        
-                        byte[] buffer = new byte[1024];
-                        int read;
-                        while ((read = input.read(buffer)) != -1) {
-                        	fos.write(buffer, 0, read);
-                        }
-                        fos.close();
-                        input.close(); 
-                        mHandler.post(mUpdateResults);
-                    } 
-                    catch (Exception e) {
-                 	   Log.e("Something broke while fetching PDF", e.toString());
+                    FileOutputStream fos = openFileOutput(savePdfAs, Context.MODE_PRIVATE);
+                    String path = getFilesDir().getAbsolutePath() + "/" + savePdfAs; // path to the root of internal memory.
+                    File f = new File(path);
+                    f.setReadable(true, false);
+                    URL url = new URL(urlToPdf);
+                    URLConnection urlConnection = url.openConnection();
+                    urlConnection.connect();
+                    
+                    InputStream input = url.openStream();
+                    
+                    byte[] buffer = new byte[1024];
+                    int read;
+                    while ((read = input.read(buffer)) != -1) {
+                    	fos.write(buffer, 0, read);
                     }
-                }
+                    fos.close();
+                    input.close(); 
+                    mHandler.post(mUpdateResults);
+                } 
                 catch (Exception e) {
-                    e.printStackTrace();
+                	Log.e("Something broke while fetching PDF", e.toString());
                 }
             }
-       });
-       t.start();	
+		};
+		new Thread(p).start();
 	}
 	
 	/**
@@ -158,4 +178,41 @@ public class MainActivity extends Activity {
         	e.printStackTrace();
         }  
     }
+	
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+			@Override
+		    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+		            long arg3) {
+				selectNavbarItem(arg2);
+		    }
+	}
+
+
+	private void selectNavbarItem(int position) {
+		switch(position) {
+			case 0:
+				Log.d("Navbar Click","Item 0");
+				//Intent a = new Intent(MainActivity.this, Activity1.class);
+		        //startActivity(a);
+		        break;
+			case 1:
+				Log.d("Navbar Click","Item 1");
+				//Intent a = new Intent(MainActivity.this, Activity1.class);
+		        //startActivity(a);
+		        break;
+		    case 2:
+		    	Log.d("Navbar Click","Item 2");
+		    	Intent browserIntent_viewHelp = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg"));
+				startActivity(browserIntent_viewHelp);
+		        break;
+			case 3:
+				Log.d("Navbar Click","Item 3");
+				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is"));
+				startActivity(browserIntent_toSite);
+		        break;
+		    default:
+		}
+	}
+		    
+		    
 }
