@@ -16,19 +16,29 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+<<<<<<< HEAD
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
+=======
+>>>>>>> Navbar-fork-by-sv1
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+<<<<<<< HEAD
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.ProgressDialog;
 
+=======
+import android.annotation.SuppressLint;
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
+import android.app.ProgressDialog;
+>>>>>>> Navbar-fork-by-sv1
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
@@ -36,15 +46,22 @@ import android.widget.AdapterView;
 import android.widget.Button;
 
 import android.widget.LinearLayout;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> Navbar-fork-by-sv1
 import android.widget.Toast;
 import android.net.Uri;
 //Navbar
 import android.widget.AdapterView;
 
 import android.widget.ListView;
+<<<<<<< HEAD
 //Navbar
+=======
+//import android.widget.ArrayAdapter;
+>>>>>>> Navbar-fork-by-sv1
 //Navbar
 
 public class MainActivity extends Activity {
@@ -53,6 +70,7 @@ public class MainActivity extends Activity {
 	 *  Handler for callbacks to the UI thread
 	 */
 	final Handler mHandler = new Handler();
+<<<<<<< HEAD
 
     
     //Navbar stuff
@@ -61,6 +79,16 @@ public class MainActivity extends Activity {
 	
 	
 
+=======
+	
+    
+    //Navbar stuff
+    private ListView navbarListView;
+    
+	
+	
+    
+>>>>>>> Navbar-fork-by-sv1
 	// declare the dialog as a member field of your activity
 	ProgressDialog mProgressDialog;
 	
@@ -186,7 +214,11 @@ public class MainActivity extends Activity {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
                 
+<<<<<<< HEAD
              // expect HTTP 200 OK, so we don't mistakenly save error report 
+=======
+                // expect HTTP 200 OK, so we don't mistakenly save error report 
+>>>>>>> Navbar-fork-by-sv1
                 // instead of the file
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
                      return "Server returned HTTP " + connection.getResponseCode() 
