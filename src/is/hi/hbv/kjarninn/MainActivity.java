@@ -7,22 +7,22 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.net.Uri;
-//Navbar
-import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ArrayAdapter;
+//Navbar
 //Navbar
 
 public class MainActivity extends Activity {
