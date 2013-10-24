@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.annotation.SuppressLint;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -30,7 +31,7 @@ import android.net.Uri;
 //Navbar
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ArrayAdapter;
+//import android.widget.ArrayAdapter;
 //Navbar
 
 public class MainActivity extends Activity {
@@ -40,23 +41,13 @@ public class MainActivity extends Activity {
 	 */
 	final Handler mHandler = new Handler();
 	
-<<<<<<< HEAD
-	/**
-	 *  Create runnable for asynchronous thread
-	 */
-    final Runnable mUpdateResults = new Runnable() {
-        public void run() {
-        	whenDownloadComplete();
-        }
-    };
     
     //Navbar stuff
     private ListView navbarListView;
-=======
->>>>>>> stDlPdf-gumma-branch-fork-by-sv1
+    
 	
 	
-
+    
 	// declare the dialog as a member field of your activity
 	ProgressDialog mProgressDialog;
 	
@@ -182,7 +173,7 @@ public class MainActivity extends Activity {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
                 
-             // expect HTTP 200 OK, so we don't mistakenly save error report 
+                // expect HTTP 200 OK, so we don't mistakenly save error report 
                 // instead of the file
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
                      return "Server returned HTTP " + connection.getResponseCode() 
