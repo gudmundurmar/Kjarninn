@@ -1,8 +1,5 @@
 package is.hi.hbv.kjarninn;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -11,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class NavbarAdapter extends ArrayAdapter<String> {
 
