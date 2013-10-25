@@ -38,12 +38,6 @@ import android.widget.Toast;
 import android.net.Uri;
 import android.widget.AdapterView;
 import android.widget.ListView;
-<<<<<<< HEAD
-=======
-//import android.widget.ArrayAdapter; // ekki notad svo kommentad ut
-
-//Navbar
->>>>>>> 453dfff6d7a2e552e9a9fc32fcb9f3dfe5873039
 
 public class MainActivity extends Activity {
 	
