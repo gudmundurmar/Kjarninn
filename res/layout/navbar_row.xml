@@ -11,7 +11,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="9dp"
+            android:layout_marginLeft="15dp"
             android:layout_alignParentTop="true"/>
     <TextView
             android:layout_alignBottom="@+id/imageView"

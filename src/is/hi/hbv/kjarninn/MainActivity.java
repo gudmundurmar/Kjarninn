@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
@@ -22,8 +21,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-//Navbar
-//Navbar
 
 public class MainActivity extends Activity {
 	
