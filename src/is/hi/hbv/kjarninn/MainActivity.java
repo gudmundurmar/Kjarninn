@@ -1,4 +1,3 @@
-
 package is.hi.hbv.kjarninn;
 
 import java.io.File;
@@ -10,52 +9,25 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-<<<<<<< HEAD
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
-=======
->>>>>>> parent of c0d1109... Fixd
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-<<<<<<< HEAD
-
 import android.net.Uri;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.annotation.SuppressLint;
-import android.app.ActionBar.LayoutParams;
-import android.app.Activity;
-import android.app.ProgressDialog;
-=======
-import android.os.Bundle;
-import android.os.Handler;
-import android.app.ActionBar.LayoutParams;
-import android.app.Activity;
->>>>>>> parent of c0d1109... Fixd
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
-
 import android.widget.LinearLayout;
-<<<<<<< HEAD
-
+import android.widget.ListView;
 import android.widget.Toast;
-import android.net.Uri;
-import android.widget.AdapterView;
-import android.widget.ListView;
-=======
-import android.net.Uri;
-//Navbar
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ArrayAdapter;
-//Navbar
->>>>>>> parent of c0d1109... Fixd
 
 public class MainActivity extends Activity {
 	
@@ -63,21 +35,23 @@ public class MainActivity extends Activity {
 	 *  Handler for callbacks to the UI thread
 	 */
 	final Handler mHandler = new Handler();
-
-    
-    //Navbar stuff
-    private ListView navbarListView;
-
-	
 	
 	// declare the dialog as a member field of your activity
 	ProgressDialog mProgressDialog;
+    
+    //Navbar stuff
+    private ListView navbarListView;
 	
+	/**
+	 * Responsible for making appropriate buttons depending on what 
+	 * files are already being stored in the application
+	 */
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		Log.d("Step 1", "Test");
         NavbarModel.LoadModel();
         navbarListView = (ListView) findViewById(R.id.navbar);
         String[] ids = new String[NavbarModel.Items.size()];
@@ -85,7 +59,7 @@ public class MainActivity extends Activity {
 
             ids[i] = Integer.toString(i+1);
         }
-
+        Log.d("Step 2", "Test");
         NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
         navbarListView.setAdapter(adapter);
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
@@ -96,11 +70,10 @@ public class MainActivity extends Activity {
 		File storageDir = getFilesDir();
 		localstorage localClass = new localstorage();
 		
-		
 		// this needs to be bound to a button instead of calling it here
 		//
 		//TODO
-		//Herna þarf að breyta..Mögulega búa til fall hérna
+		//Herna Ë›arf aï£¿ breyta..MË†gulega bË™a til fall hÃˆrna
 		String urli = "http://kjarninn.is/kerfi/wp-content/uploads/2013/10/2013_10_17.pdf";
 		String nafn = "NafnTest";
 		String[] downloads = new String[2];
@@ -124,7 +97,7 @@ public class MainActivity extends Activity {
 		
 		
 		download.execute(downloads);
-		
+
 		final File[] fileList = localClass.FetchFiles(storageDir);
 		String[] filenames = localClass.FetchNames(storageDir);
 		
@@ -151,16 +124,10 @@ public class MainActivity extends Activity {
 			Log.d("Id of Button " , String.valueOf(b.getId()));
 		}
 		
-		/**
-		 * Responsible for making appropriate buttons depending on what 
-		 * files are already being stored in the application
-		 */
-		
-
-
     }
 	
-	public class StartDownload extends AsyncTask <String, Integer, String>{
+
+    public class StartDownload extends AsyncTask <String, Integer, String>{
 		private Context context;
 		
 		public StartDownload(Context context) {
@@ -170,7 +137,7 @@ public class MainActivity extends Activity {
 		
 		@Override
 		/**
-		 * savePdfAs verður að vera array af strengjum
+		 * savePdfAs verÃ°ur aÃ° vera array af strengjum
 		 */
 		protected String doInBackground(String... savePdfAs) {
 			// take CPU lock to prevent CPU from going off if the user 
@@ -195,7 +162,7 @@ public class MainActivity extends Activity {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
                 
-                // expect HTTP 200 OK, so we don't mistakenly save error report 
+             // expect HTTP 200 OK, so we don't mistakenly save error report 
                 // instead of the file
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
                      return "Server returned HTTP " + connection.getResponseCode() 
@@ -251,10 +218,8 @@ public class MainActivity extends Activity {
 
 	    @Override
 	    protected void onProgressUpdate(Integer... progress) {
-	    	Log.d("error4", "her");
 	        super.onProgressUpdate(progress);
 	        // if we get here, length is known, now set indeterminate to false
-	        Log.d("error4", "her");
 	        mProgressDialog.setIndeterminate(false);
 	        mProgressDialog.setMax(100);
 	        mProgressDialog.setProgress(progress[0]);
@@ -272,17 +237,6 @@ public class MainActivity extends Activity {
 
 		   		
 	}
-	
-	/**
-	 * Description:
-	 * Creates a new thread for downloading pdf file.
-	 * When done downloading it calls whenDownloadComplete() where we update the UI 
-	 * String urlToPdf is a web url to the pdf we want to download, String savePdfAs is the
-	 * name of the file we want to save the pdf to
-	 */
-
-	
-
 	
 	/**
 	 * Options menu stuff
