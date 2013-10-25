@@ -10,11 +10,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+=======
+>>>>>>> parent of c0d1109... Fixd
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+<<<<<<< HEAD
 
 import android.net.Uri;
 
@@ -26,18 +30,32 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.ProgressDialog;
+=======
+import android.os.Bundle;
+import android.os.Handler;
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
+>>>>>>> parent of c0d1109... Fixd
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 
 import android.widget.LinearLayout;
+<<<<<<< HEAD
 
 import android.widget.Toast;
 import android.net.Uri;
 import android.widget.AdapterView;
 import android.widget.ListView;
+=======
+import android.net.Uri;
+//Navbar
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.ArrayAdapter;
+//Navbar
+>>>>>>> parent of c0d1109... Fixd
 
 public class MainActivity extends Activity {
 	

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
@@ -6,3 +7,26 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry kind="lib" path="E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/google-gson-2.2.4-release/google-gson-2.2.4/gson-2.2.4.jar" sourcepath="E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/google-gson-2.2.4-release/google-gson-2.2.4/gson-2.2.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/google-gson-2.2.4-release/google-gson-2.2.4/gson-2.2.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/Jackson/jackson-core-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/Jackson/jackson-mapper-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/CommonIO/commons-io-2.4/commons-io-2.4.jar" sourcepath="E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/CommonIO/commons-io-2.4/commons-io-2.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:/Documents/Haskoli_Islands/fimmtaonn/Kjarninn/Kjarninn/CommonIO/commons-io-2.4/commons-io-2.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>
+>>>>>>> parent of c0d1109... Fixd
