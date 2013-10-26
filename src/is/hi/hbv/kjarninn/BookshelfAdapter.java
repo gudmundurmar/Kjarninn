@@ -8,17 +8,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.io.IOException;
 import java.io.InputStream;
 
-public class NavbarAdapter extends ArrayAdapter<String> {
+public class BookshelfAdapter extends ArrayAdapter<String> {
 
     private final Context context;
     private final String[] Ids;
     private final int rowResourceId;
 
-    public NavbarAdapter(Context context, int textViewResourceId, String[] objects) {
+    public BookshelfAdapter(Context context, int textViewResourceId, String[] objects) {
 
         super(context, textViewResourceId, objects);
 
@@ -34,8 +33,8 @@ public class NavbarAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(rowResourceId, parent, false);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.NavbarimageView);
-        TextView textView = (TextView) rowView.findViewById(R.id.NavbartextView);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.imageView);
+        TextView textView = (TextView) rowView.findViewById(R.id.textView);
 
         int id = Integer.parseInt(Ids[position]);
         String imageFile = NavbarModel.GetbyId(id).IconFile;

@@ -51,7 +51,6 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		Log.d("Step 1", "Test");
         NavbarModel.LoadModel();
         navbarListView = (ListView) findViewById(R.id.navbar);
         String[] ids = new String[NavbarModel.Items.size()];
@@ -59,7 +58,7 @@ public class MainActivity extends Activity {
 
             ids[i] = Integer.toString(i+1);
         }
-        Log.d("Step 2", "Test");
+        
         NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
         navbarListView.setAdapter(adapter);
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
