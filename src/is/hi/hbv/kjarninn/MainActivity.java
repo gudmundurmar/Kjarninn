@@ -293,7 +293,6 @@ public class MainActivity extends Activity {
 	 */
 	public void getJson(View view) {
 		final String tag = "test";
-		TextView text = (TextView) findViewById(R.id.testText);
 		Log.d(tag, "Clicked JSON button");
 		
 		
