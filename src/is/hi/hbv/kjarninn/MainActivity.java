@@ -3,11 +3,13 @@ package is.hi.hbv.kjarninn;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URI;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,23 +24,32 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.net.Uri;
+import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
@@ -47,35 +58,72 @@ public class MainActivity extends Activity {
 	 */
 	final Handler mHandler = new Handler();
 	
-	/**
-	 *  Create runnable for posting
-	 */
-    final Runnable mUpdateResults = new Runnable() {
-        public void run() {
-        	whenDownloadComplete();
-        }
-    };
+	// declare the dialog as a member field of your activity
+	ProgressDialog mProgressDialog;
+    
+    //Navbar stuff
+    private ListView navbarListView;
 	
 	/**
-	 * Kicking things off ..
+	 * Responsible for making appropriate buttons depending on what 
+	 * files are already being stored in the application
 	 */
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+        NavbarModel.LoadModel();
+        navbarListView = (ListView) findViewById(R.id.navbar);
+        String[] ids = new String[NavbarModel.Items.size()];
+        for (int i= 0; i < ids.length; i++){
+
+            ids[i] = Integer.toString(i+1);
+        }
+        
+        NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
+        navbarListView.setAdapter(adapter);
+        navbarListView.setOnItemClickListener(new DrawerItemClickListener());
+		
+		
+		List<Button> buttons = new ArrayList<Button>();
+		
 		File storageDir = getFilesDir();
 		localstorage localClass = new localstorage();
 		
-		startDownloadingPDF();
+		// this needs to be bound to a button instead of calling it here
+		//
+		//TODO
+		//Herna ˛arf a breyta..Mˆgulega b˙a til fall hÈrna
+		String urli = "http://kjarninn.is/kerfi/wp-content/uploads/2013/10/2013_10_17.pdf";
+		String nafn = "NafnTest";
+		String[] downloads = new String[2];
 		
+		downloads[0] = urli;
+		downloads[1] = nafn;
+		final StartDownload download = new StartDownload(this);
+		
+		// instantiate it within the onCreate method
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setMessage("A message");
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		mProgressDialog.setCancelable(true);
+
+		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+		    public void onCancel(DialogInterface dialog) {
+		        download.cancel(true);
+		    }
+		});	
+		
+		
+		download.execute(downloads);
+
 		final File[] fileList = localClass.FetchFiles(storageDir);
 		String[] filenames = localClass.FetchNames(storageDir);
 		
 		LinearLayout ll = (LinearLayout)findViewById(R.id.books);
 		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		
-		List<Button> buttons = new ArrayList<Button>();
 		
 		for (int i=0; i < fileList.length; i++)
 		{
@@ -99,55 +147,117 @@ public class MainActivity extends Activity {
 		
     }
 	
-	/**
-	 * Creates a new thread for downloading pdf file.
-	 * When done downloading it calls whenDownloadComplete() where we update the UI 
-	 */
-	protected void startDownloadingPDF() {
-		// Fire off a thread to do some work that we shouldn't do directly in the UI thread
-		Thread t = new Thread(new Runnable(){
-			@Override
-            public void run() {
-                try {
-                    try {
-                        FileOutputStream fos = openFileOutput("Book.pdf", Context.MODE_PRIVATE);
-                        String path = getFilesDir().getAbsolutePath() + "/Book.pdf"; // path to the root of internal memory.
-                        File f = new File(path);
-                        f.setReadable(true, false);
-                        URL url = new URL("http://kjarninn.is/kerfi/wp-content/uploads/2013/09/12_09_2013.pdf");
-                        URLConnection urlConnection = url.openConnection();
-                        urlConnection.connect();
-                        
-                        InputStream input = url.openStream();
-                        
-                        byte[] buffer = new byte[1024];
-                        int read;
-                        while ((read = input.read(buffer)) != -1) {
-                        	fos.write(buffer, 0, read);
-                        }
-                        fos.close();
-                        input.close(); 
-                        mHandler.post(mUpdateResults);
-                    } 
-                    catch (Exception e) {
-                 	   Log.e("Something broke while fetching PDF", e.toString());
-                    }
+
+    public class StartDownload extends AsyncTask <String, Integer, String>{
+		private Context context;
+		
+		public StartDownload(Context context) {
+			//constructor
+			this.context = context;
+		}
+		
+		@Override
+		/**
+		 * savePdfAs verður að vera array af strengjum
+		 */
+		protected String doInBackground(String... savePdfAs) {
+			// take CPU lock to prevent CPU from going off if the user 
+	        // presses the power button during download
+	        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+	        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,getClass().getName());
+	        wl.acquire();
+	        
+			// TODO Auto-generated method stub
+	        try {
+	            InputStream input = null;
+	            OutputStream output = null;
+	            HttpURLConnection connection = null;
+			try {
+				String namePdf = savePdfAs[1];
+				String urlToPdf = savePdfAs[0];
+                FileOutputStream fos = openFileOutput(namePdf, Context.MODE_PRIVATE);
+                String path = getFilesDir().getAbsolutePath() + "/" + namePdf + ".pdf"; // path to the root of internal memory.
+                File f = new File(path);
+                f.setReadable(true, false);
+                URL url = new URL(urlToPdf);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.connect();
+                
+             // expect HTTP 200 OK, so we don't mistakenly save error report 
+                // instead of the file
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
+                     return "Server returned HTTP " + connection.getResponseCode() 
+                         + " " + connection.getResponseMessage();
+
+                
+                int file_size = connection.getContentLength();
+                Log.e("file_size", Integer.toString(file_size));
+                input = connection.getInputStream();
+                
+                byte[] buffer = new byte[1024];
+                int read;
+                long total = 0;
+                while ((read = input.read(buffer)) != -1) {
+                	if (isCancelled())
+                        return null;
+                    total += read;
+                    if (file_size > 0) // only if total length is known
+                        publishProgress((int) (total * 100 / file_size));
+                	fos.write(buffer, 0, read);
                 }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+                fos.close();
+                input.close(); 
+                
+            } 
+            catch (Exception e) {
+            	Log.e("Something broke while fetching PDF", e.toString());
             }
-       });
-       t.start();	
+			finally {
+                try {
+                    if (output != null)
+                        output.close();
+                    if (input != null)
+                    	input.close();
+                } 
+                catch (IOException ignored) {Log.d("error", "her"); }
+
+                if (connection != null)
+                	connection.disconnect();
+            }
+        } finally {
+            wl.release();
+        }
+			return null;
+		}
+		
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mProgressDialog.show();
+	        
+	    }
+
+	    @Override
+	    protected void onProgressUpdate(Integer... progress) {
+	        super.onProgressUpdate(progress);
+	        // if we get here, length is known, now set indeterminate to false
+	        mProgressDialog.setIndeterminate(false);
+	        mProgressDialog.setMax(100);
+	        mProgressDialog.setProgress(progress[0]);
+	    }
+
+	    @Override
+	    protected void onPostExecute(String result) {
+	    	Log.d("error5", "her");
+	        mProgressDialog.dismiss();
+	        if (result != null)
+	            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+	        else
+	            Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+	    }
+
+		   		
 	}
-	
-	/**
-	 * Function for updating the UI after download of pdf has completed
-	 */
-	private void whenDownloadComplete() {
-		// update the UI here
-		Log.d("This state reached.","yayy");
-    }
 	
 	/**
 	 * Options menu stuff
@@ -276,4 +386,40 @@ public class MainActivity extends Activity {
 
 	}
 	
+	private class DrawerItemClickListener implements ListView.OnItemClickListener {
+			@Override
+		    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+		            long arg3) {
+				selectNavbarItem(arg2);
+		    }
+	}
+
+
+	private void selectNavbarItem(int position) {
+		switch(position) {
+			case 0:
+				Log.d("Navbar Click","Item 0");
+				//Intent a = new Intent(MainActivity.this, Activity1.class);
+		        //startActivity(a);
+		        break;
+			case 1:
+				Log.d("Navbar Click","Item 1");
+				//Intent a = new Intent(MainActivity.this, Activity1.class);
+		        //startActivity(a);
+		        break;
+		    case 2:
+		    	Log.d("Navbar Click","Item 2");
+		    	Intent browserIntent_viewHelp = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg"));
+				startActivity(browserIntent_viewHelp);
+		        break;
+			case 3:
+				Log.d("Navbar Click","Item 3");
+				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is"));
+				startActivity(browserIntent_toSite);
+		        break;
+		    default:
+		}
+	}
+		    
+		    
 }
