@@ -7,7 +7,7 @@
                 android:minHeight="64dp">
 
     <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/BookshelfimageView"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentLeft="true"
@@ -17,13 +17,11 @@
             android:layout_alignBottom="@+id/imageView"
             android:layout_width="97dp"
             android:layout_height="32dp"
-            android:id="@+id/textView"
+            android:id="@+id/BookshelftextView"
             android:textColor="#FFFFFF"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="66dp"
+            android:layout_alignParentRight="true"
             android:gravity="center_vertical"/>
-    
-    <ListView 
-        	android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

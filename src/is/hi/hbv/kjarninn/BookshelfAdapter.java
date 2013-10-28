@@ -33,13 +33,13 @@ public class BookshelfAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(rowResourceId, parent, false);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.imageView);
-        TextView textView = (TextView) rowView.findViewById(R.id.textView);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.BookshelfimageView);
+        TextView textView = (TextView) rowView.findViewById(R.id.BookshelftextView);
 
         int id = Integer.parseInt(Ids[position]);
-        String imageFile = NavbarModel.GetbyId(id).IconFile;
+        String imageFile = BookshelfModel.GetbyId(id).IconFile;
 
-        textView.setText(NavbarModel.GetbyId(id).Name);
+        textView.setText(BookshelfModel.GetbyId(id).Name);
         // get input stream
         InputStream ims = null;
         try {

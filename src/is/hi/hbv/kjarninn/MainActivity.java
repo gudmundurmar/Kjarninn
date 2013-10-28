@@ -63,6 +63,7 @@ public class MainActivity extends Activity {
     
     //Navbar stuff
     private ListView navbarListView;
+    private ListView bookshelfListView;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -74,17 +75,22 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
         NavbarModel.LoadModel();
+        BookshelfModel.LoadModel();
         navbarListView = (ListView) findViewById(R.id.navbar);
+        bookshelfListView = (ListView) findViewById(R.id.bookshelf);
         String[] ids = new String[NavbarModel.Items.size()];
         for (int i= 0; i < ids.length; i++){
 
             ids[i] = Integer.toString(i+1);
         }
-        
+        BookshelfAdapter badapter = new BookshelfAdapter(this,R.layout.bookshelf_row,ids);
         NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
         navbarListView.setAdapter(adapter);
+        bookshelfListView.setAdapter(badapter);
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
-		
+        getJson();
+        
+		/*
 		
 		List<Button> buttons = new ArrayList<Button>();
 		
@@ -143,7 +149,7 @@ public class MainActivity extends Activity {
 		}
 		for (Button b:buttons){
 			Log.d("Id of Button " , String.valueOf(b.getId()));
-		}
+		} */
 		
     }
 	
@@ -291,15 +297,20 @@ public class MainActivity extends Activity {
 	/**
 	 * Get JSON from server on button click:
 	 */
-	public void getJson(View view) {
+	public void getJson() {
 		final String tag = "test";
 		Log.d(tag, "Clicked JSON button");
 		
-		
-		// Fire off a thread to do some work that we shouldn't do directly in the UI thread
-		Thread getJsonT = new Thread(new Runnable(){
+		class GetJSON extends AsyncTask <Void, Void, Void>{
+			private Context context;
+			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
+			public GetJSON(Context context) {
+				//constructor
+				this.context = context;
+			}	
+
 			@Override
-			public void run() {
+			protected Void doInBackground(Void...as) {
 				try {
 					JSONObject json = getJson("http://hugihlynsson.com/hi/kjarninn/kjarninn.php");
 					Log.d("test", "Finished fetching JSON: ");
@@ -326,9 +337,24 @@ public class MainActivity extends Activity {
 				catch (Exception e) {
 					e.printStackTrace();
 				}
+				return null;
 			}
-		});
-		getJsonT.start();
+		}
+		final GetJSON json = new GetJSON(this);
+		json.execute();
+	     // instantiate it within the onCreate method
+ 		mProgressDialog = new ProgressDialog(this);
+ 		mProgressDialog.setMessage("A message");
+ 		mProgressDialog.setIndeterminate(true);
+ 		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+ 		//mProgressDialog.setCancelable(true);
+
+ 		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+ 		    public void onCancel(DialogInterface dialog) {
+ 		        json.cancel(true);
+ 		    }
+ 		});	
+		
 	}
 	
 	// Fetches JSON from URL and returns object:
