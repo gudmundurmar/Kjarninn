@@ -1,14 +1,29 @@
 package is.hi.hbv.kjarninn;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -19,6 +34,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
+import android.app.DownloadManager;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +45,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.net.Uri;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -265,6 +287,103 @@ public class MainActivity extends Activity {
         	e.printStackTrace();
         }  
     }
+	
+	/**
+	 * Get JSON from server on button click:
+	 */
+	public void getJson(View view) {
+		final String tag = "test";
+		Log.d(tag, "Clicked JSON button");
+		
+		
+		// Fire off a thread to do some work that we shouldn't do directly in the UI thread
+		Thread getJsonT = new Thread(new Runnable(){
+			@Override
+			public void run() {
+				try {
+					JSONObject json = getJson("http://hugihlynsson.com/hi/kjarninn/kjarninn.php");
+					Log.d("test", "Finished fetching JSON: ");
+					Log.d("test", json.toString());
+					
+					JSONArray versions = json.getJSONArray("versions");
+					
+					for (int i = 0; i < versions.length(); i++) {
+						JSONObject version = versions.getJSONObject(i);
+						Log.d("test", version.getString("headline"));
+					}
+					
+					Looper.prepare();
+					// Display toast message:
+					Context context = getApplicationContext();
+					CharSequence text = "Successfully loaded json!";
+					int duration = Toast.LENGTH_SHORT;
+
+					Toast toast = Toast.makeText(context, text, duration);
+					toast.show();
+					
+					Looper.loop();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		getJsonT.start();
+	}
+	
+	// Fetches JSON from URL and returns object:
+	public static JSONObject getJson(String url){
+
+		Log.d("test", "Starting to get JSON");
+		InputStream is = null;
+		String result = "";
+		JSONObject jsonObject = null;
+
+		// HTTP
+		try {	    	
+			HttpClient httpclient = new DefaultHttpClient(); // for port 80 requests!
+			HttpGet httppost = new HttpGet(url);
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			is = entity.getContent();
+			Log.d("test", "JSON loaded");
+		} catch(Exception e) {
+			Log.d("test", "Error loading JSON");
+			return null;
+		}
+
+		// Read response to string
+		try {	    	
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is,"utf-8"),8);
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			is.close();
+			result = sb.toString();
+			// Remove first and last letters (who are both '"' and confuse the JSON object parser):
+			result = result.substring(1, result.length()-1);
+			Log.d("test", "JSON has been read:" + result);    
+			Log.d("test", result.toString());          
+		} catch(Exception e) {
+			Log.d("test", "Error reading JSON");
+			return null;
+		}
+
+		// Convert string to object
+		try {
+			jsonObject = new JSONObject(result); 
+			Log.d("test", "JSON string has been converted to an Object");            
+		} catch(JSONException e) {
+			Log.d("test", "Failed to convert string to JSON"); 
+			Log.d("test", e.toString());   
+			return null;
+		}
+
+		return jsonObject;
+
+	}
 	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 			@Override
