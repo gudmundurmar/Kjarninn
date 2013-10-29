@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,10 +17,13 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -31,6 +35,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.app.ActionBar.LayoutParams;
+import android.app.Activity;
+import android.app.DownloadManager;
 import android.os.PowerManager;
 import android.util.Log;
 import android.view.Menu;
@@ -38,12 +45,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.net.Uri;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	
-	static Context context;
 	/**
 	 *  Handler for callbacks to the UI thread
 	 */
@@ -54,8 +63,7 @@ public class MainActivity extends Activity {
     
     //Navbar stuff
     private ListView navbarListView;
-    static ListView bookshelfListView;
-    
+    private ListView bookshelfListView;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -66,10 +74,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		MainActivity.context = this;
-		
         NavbarModel.LoadModel();
-        
+        BookshelfModel.LoadModel();
         navbarListView = (ListView) findViewById(R.id.navbar);
         bookshelfListView = (ListView) findViewById(R.id.bookshelf);
         String[] ids = new String[NavbarModel.Items.size()];
@@ -77,12 +83,12 @@ public class MainActivity extends Activity {
 
             ids[i] = Integer.toString(i+1);
         }
-        
-        
+        BookshelfAdapter badapter = new BookshelfAdapter(this,R.layout.bookshelf_row,ids);
         NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
         navbarListView.setAdapter(adapter);
-        
+        bookshelfListView.setAdapter(badapter);
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
+        getJson();
         
 		/*
 		
@@ -237,6 +243,24 @@ public class MainActivity extends Activity {
 	        
 	    }
 
+	    @Override
+	    protected void onProgressUpdate(Integer... progress) {
+	        super.onProgressUpdate(progress);
+	        // if we get here, length is known, now set indeterminate to false
+	        mProgressDialog.setIndeterminate(false);
+	        mProgressDialog.setMax(100);
+	        mProgressDialog.setProgress(progress[0]);
+	    }
+
+	    @Override
+	    protected void onPostExecute(String result) {
+	    	Log.d("error5", "her");
+	        mProgressDialog.dismiss();
+	        if (result != null)
+	            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
+	        else
+	            Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+	    }
 
 		   		
 	}
@@ -270,7 +294,122 @@ public class MainActivity extends Activity {
         }  
     }
 	
+	/**
+	 * Get JSON from server on button click:
+	 */
+	public void getJson() {
+		final String tag = "test";
+		Log.d(tag, "Clicked JSON button");
+		
+		class GetJSON extends AsyncTask <Void, Void, Void>{
+			private Context context;
+			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
+			public GetJSON(Context context) {
+				//constructor
+				this.context = context;
+			}	
 
+			@Override
+			protected Void doInBackground(Void...as) {
+				try {
+					JSONObject json = getJson("http://hugihlynsson.com/hi/kjarninn/kjarninn.php");
+					Log.d("test", "Finished fetching JSON: ");
+					Log.d("test", json.toString());
+					
+					JSONArray versions = json.getJSONArray("versions");
+					
+					for (int i = 0; i < versions.length(); i++) {
+						JSONObject version = versions.getJSONObject(i);
+						Log.d("test", version.getString("headline"));
+					}
+					
+					Looper.prepare();
+					// Display toast message:
+					Context context = getApplicationContext();
+					CharSequence text = "Successfully loaded json!";
+					int duration = Toast.LENGTH_SHORT;
+
+					Toast toast = Toast.makeText(context, text, duration);
+					toast.show();
+					
+					Looper.loop();
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+				return null;
+			}
+		}
+		final GetJSON json = new GetJSON(this);
+		json.execute();
+	     // instantiate it within the onCreate method
+ 		mProgressDialog = new ProgressDialog(this);
+ 		mProgressDialog.setMessage("A message");
+ 		mProgressDialog.setIndeterminate(true);
+ 		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+ 		//mProgressDialog.setCancelable(true);
+
+ 		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+ 		    public void onCancel(DialogInterface dialog) {
+ 		        json.cancel(true);
+ 		    }
+ 		});	
+		
+	}
+	
+	// Fetches JSON from URL and returns object:
+	public static JSONObject getJson(String url){
+
+		Log.d("test", "Starting to get JSON");
+		InputStream is = null;
+		String result = "";
+		JSONObject jsonObject = null;
+
+		// HTTP
+		try {	    	
+			HttpClient httpclient = new DefaultHttpClient(); // for port 80 requests!
+			HttpGet httppost = new HttpGet(url);
+			HttpResponse response = httpclient.execute(httppost);
+			HttpEntity entity = response.getEntity();
+			is = entity.getContent();
+			Log.d("test", "JSON loaded");
+		} catch(Exception e) {
+			Log.d("test", "Error loading JSON");
+			return null;
+		}
+
+		// Read response to string
+		try {	    	
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is,"utf-8"),8);
+			StringBuilder sb = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				sb.append(line + "\n");
+			}
+			is.close();
+			result = sb.toString();
+			// Remove first and last letters (who are both '"' and confuse the JSON object parser):
+			result = result.substring(1, result.length()-1);
+			Log.d("test", "JSON has been read:" + result);    
+			Log.d("test", result.toString());          
+		} catch(Exception e) {
+			Log.d("test", "Error reading JSON");
+			return null;
+		}
+
+		// Convert string to object
+		try {
+			jsonObject = new JSONObject(result); 
+			Log.d("test", "JSON string has been converted to an Object");            
+		} catch(JSONException e) {
+			Log.d("test", "Failed to convert string to JSON"); 
+			Log.d("test", e.toString());   
+			return null;
+		}
+
+		return jsonObject;
+
+	}
 	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 			@Override
