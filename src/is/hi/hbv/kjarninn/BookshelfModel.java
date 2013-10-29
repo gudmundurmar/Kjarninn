@@ -2,18 +2,40 @@ package is.hi.hbv.kjarninn;
 
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.util.Log;
+
 public class BookshelfModel {
 
     public static ArrayList<BookshelfItem> Items;
 
     public static void LoadModel() {
+    	
+    	Items = new ArrayList<BookshelfItem>();
 
-        Items = new ArrayList<BookshelfItem>();
-        Items.add(new BookshelfItem(1, "book2.png", "Í lestri blablabla"));
-        Items.add(new BookshelfItem(2, "bookshelf.png", "Blaðahilla"));
-        Items.add(new BookshelfItem(3, "wat.png", "Hjálp"));
-        Items.add(new BookshelfItem(4, "widi.png", "Á vefnum"));
+    	JSONObject json = GetJson.getJson(MainActivity.context);
+    	
+    	if(json != null) {
+    		try {
+				JSONArray versions = json.getJSONArray("versions");
+				for(int i = 0; i<versions.length(); i++) {
+					JSONObject version = versions.getJSONObject(i);
+			        Items.add(new BookshelfItem(i, "book2.png", version.getString("headline")));
+			        Log.e("Headline",version.getString("headline"));
+				}
 
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
+    	
+        
     }
 
     public static BookshelfItem GetbyId(int id){
