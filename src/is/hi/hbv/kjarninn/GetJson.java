@@ -19,9 +19,11 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Looper;
 import android.util.Log;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class GetJson {
+	
 	static ProgressDialog mProgressDialog;
 	/**
 	 * Get JSON from server on button click:
@@ -82,9 +84,14 @@ public class GetJson {
 		        if (result != null) {
 		        	Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
 		        	BookshelfModel.LoadModel();
-		        	BookshelfAdapter badapter = new BookshelfAdapter(this,R.layout.bookshelf_row,ids);
-		        	//bookshelfListView.setAdapter(badapter);
+		        	String[] ids = new String[BookshelfModel.Items.size()];
+		        	for(int i = 1; i<=ids.length; i++) {
+		        		ids[i] = Integer.toString(i);
+		        	}
 		        	
+		        	
+		        	BookshelfAdapter badapter = new BookshelfAdapter(this.context,R.layout.bookshelf_row,ids);
+		        	MainActivity.bookshelfListView.setAdapter(badapter);		        	
 		        }
 		        else {
 		        	Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();

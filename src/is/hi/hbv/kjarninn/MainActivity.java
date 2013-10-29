@@ -54,7 +54,8 @@ public class MainActivity extends Activity {
     
     //Navbar stuff
     private ListView navbarListView;
-    private ListView bookshelfListView;
+    static ListView bookshelfListView;
+    
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -76,6 +77,7 @@ public class MainActivity extends Activity {
 
             ids[i] = Integer.toString(i+1);
         }
+        
         
         NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
         navbarListView.setAdapter(adapter);
