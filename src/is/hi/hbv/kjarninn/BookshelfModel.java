@@ -9,10 +9,10 @@ public class BookshelfModel {
     public static void LoadModel() {
 
         Items = new ArrayList<BookshelfItem>();
-        Items.add(new BookshelfItem(1, "book2.png", "Í lestri blablabla"));
+        /*Items.add(new BookshelfItem(1, "book2.png", "Í lestri blablabla"));
         Items.add(new BookshelfItem(2, "bookshelf.png", "Blaðahilla"));
         Items.add(new BookshelfItem(3, "wat.png", "Hjálp"));
-        Items.add(new BookshelfItem(4, "widi.png", "Á vefnum"));
+        Items.add(new BookshelfItem(4, "widi.png", "Á vefnum"));*/
 
     }
 

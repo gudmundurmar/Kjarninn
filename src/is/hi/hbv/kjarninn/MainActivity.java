@@ -64,6 +64,8 @@ public class MainActivity extends Activity {
     //Navbar stuff
     private ListView navbarListView;
     private ListView bookshelfListView;
+    public JSONArray versions;
+    public boolean jsonLoaded = false;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -83,12 +85,23 @@ public class MainActivity extends Activity {
 
             ids[i] = Integer.toString(i+1);
         }
-        BookshelfAdapter badapter = new BookshelfAdapter(this,R.layout.bookshelf_row,ids);
         NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
         navbarListView.setAdapter(adapter);
-        bookshelfListView.setAdapter(badapter);
+
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
         getJson();
+        
+        while(true){
+        	if (jsonLoaded){
+        		try{
+        			LoadBooks();
+        			break;
+        		}
+                catch (Exception e) {
+                	Log.e("Something broke while loading books to view", e.toString());
+                }
+        	}
+        }
         
 		/*
 		
@@ -316,7 +329,7 @@ public class MainActivity extends Activity {
 					Log.d("test", "Finished fetching JSON: ");
 					Log.d("test", json.toString());
 					
-					JSONArray versions = json.getJSONArray("versions");
+					versions = json.getJSONArray("versions");
 					
 					for (int i = 0; i < versions.length(); i++) {
 						JSONObject version = versions.getJSONObject(i);
@@ -332,6 +345,8 @@ public class MainActivity extends Activity {
 					Toast toast = Toast.makeText(context, text, duration);
 					toast.show();
 					
+					jsonLoaded = true;
+					
 					Looper.loop();
 				}
 				catch (Exception e) {
@@ -339,6 +354,8 @@ public class MainActivity extends Activity {
 				}
 				return null;
 			}
+
+
 		}
 		final GetJSON json = new GetJSON(this);
 		json.execute();
@@ -354,6 +371,25 @@ public class MainActivity extends Activity {
  		        json.cancel(true);
  		    }
  		});	
+		
+	}
+	
+	private void LoadBooks() throws JSONException {
+		
+		
+		for (int i = 0; i < versions.length(); i++) {
+			JSONObject version = versions.getJSONObject(i);
+			Log.d("test", version.getString("headline"));
+			BookshelfModel.Items.add(new BookshelfItem(i+1, "book2.png", version.getString("name")));
+		}
+		
+        String[] bids = new String[BookshelfModel.Items.size()];
+        for (int i= 0; i < bids.length; i++){
+
+            bids[i] = Integer.toString(i+1);
+        }
+        BookshelfAdapter badapter = new BookshelfAdapter(this,R.layout.bookshelf_row,bids);
+        bookshelfListView.setAdapter(badapter);
 		
 	}
 	
