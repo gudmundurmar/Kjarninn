@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -187,8 +188,6 @@ public class MainActivity extends Activity {
 	        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,getClass().getName());
 	        wl.acquire();
 	        
-	        Log.e("Her","Herro");
-	        
 			// TODO Auto-generated method stub
 	        try {
 	            InputStream input = null;
@@ -197,7 +196,6 @@ public class MainActivity extends Activity {
 			try {
 				String namePdf = savePdfAs[1];
 				String urlToPdf = savePdfAs[0];
-				Log.e("Download debug",savePdfAs[2]);
                 FileOutputStream fos = openFileOutput(namePdf, Context.MODE_PRIVATE);
                 String path = getFilesDir().getAbsolutePath() + "/" + namePdf + ".pdf"; // path to the root of internal memory.
                 File f = new File(path);
@@ -525,7 +523,11 @@ public void selectBookshelfItem(int position) {
 		});	
 		
 		Log.e("Executing downloads",nafn);
-		download.execute(downloads);
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		    download.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, downloads);
+		else
+		    download.execute(downloads);
 
 		
 	
