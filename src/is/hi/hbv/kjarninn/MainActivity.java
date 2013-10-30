@@ -90,6 +90,7 @@ public class MainActivity extends Activity {
 
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
         getJson();
+        bookshelfListView.setOnItemClickListener(new BookshelfClickListener());
         
         while(true){
         	if (jsonLoaded){
@@ -481,6 +482,60 @@ public class MainActivity extends Activity {
 		    default:
 		}
 	}
+	
+	private class BookshelfClickListener implements ListView.OnItemClickListener {
+		@Override
+	    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+	            long arg3) {
+			selectBookshelfItem(arg2);
+	    }
+}
+
+
+private void selectBookshelfItem(int position) {
+	try {
+		JSONObject version = versions.getJSONObject(position);
+		Log.d("test", version.getString("pdfurl"));
+		
+		File storageDir = getFilesDir();
+		localstorage localClass = new localstorage();
+		
+		// this needs to be bound to a button instead of calling it here
+		//
+		//TODO
+		//Herna ˛arf a breyta..Mˆgulega b˙a til fall hÈrna
+		String urli = version.getString("pdfurl");
+		String nafn = version.getString("headline");
+		String[] downloads = new String[2];
+		
+		downloads[0] = urli;
+		downloads[1] = nafn;
+		final StartDownload download = new StartDownload(this);
+		
+		// instantiate it within the onCreate method
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setMessage("Downloading "+nafn);
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		mProgressDialog.setCancelable(true);
+
+		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+		    public void onCancel(DialogInterface dialog) {
+		        download.cancel(true);
+		    }
+		});	
+		
+		
+		download.execute(downloads);
+
+		
+	
+	} 
+	catch (JSONException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
 		    
 		    
 }
