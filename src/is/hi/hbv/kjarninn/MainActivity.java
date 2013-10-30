@@ -187,6 +187,8 @@ public class MainActivity extends Activity {
 	        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,getClass().getName());
 	        wl.acquire();
 	        
+	        Log.e("Her","Herro");
+	        
 			// TODO Auto-generated method stub
 	        try {
 	            InputStream input = null;
@@ -195,6 +197,7 @@ public class MainActivity extends Activity {
 			try {
 				String namePdf = savePdfAs[1];
 				String urlToPdf = savePdfAs[0];
+				Log.e("Download debug",savePdfAs[2]);
                 FileOutputStream fos = openFileOutput(namePdf, Context.MODE_PRIVATE);
                 String path = getFilesDir().getAbsolutePath() + "/" + namePdf + ".pdf"; // path to the root of internal memory.
                 File f = new File(path);
@@ -489,21 +492,17 @@ public class MainActivity extends Activity {
 	            long arg3) {
 			selectBookshelfItem(arg2);
 	    }
-}
+	}
 
 
-private void selectBookshelfItem(int position) {
+public void selectBookshelfItem(int position) {
 	try {
 		JSONObject version = versions.getJSONObject(position);
-		Log.d("test", version.getString("pdfurl"));
-		
-		File storageDir = getFilesDir();
-		localstorage localClass = new localstorage();
+		Log.d("Selected Bookshelf Item", version.getString("pdfurl"));
 		
 		// this needs to be bound to a button instead of calling it here
 		//
 		//TODO
-		//Herna ˛arf a breyta..Mˆgulega b˙a til fall hÈrna
 		String urli = version.getString("pdfurl");
 		String nafn = version.getString("headline");
 		String[] downloads = new String[2];
@@ -525,7 +524,7 @@ private void selectBookshelfItem(int position) {
 		    }
 		});	
 		
-		
+		Log.e("Executing downloads",nafn);
 		download.execute(downloads);
 
 		
