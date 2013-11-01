@@ -90,9 +90,11 @@ public class MainActivity extends Activity {
         navbarListView.setAdapter(adapter);
 
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
+        Log.e("Getting","Json");
         getJson();
-        bookshelfListView.setOnItemClickListener(new BookshelfClickListener());
         
+
+        /*
         while(true){
         	if (jsonLoaded){
         		try{
@@ -103,7 +105,7 @@ public class MainActivity extends Activity {
                 	Log.e("Something broke while loading books to view", e.toString());
                 }
         	}
-        }
+        }*/
         
 		/*
 		
@@ -335,10 +337,10 @@ public class MainActivity extends Activity {
 					
 					for (int i = 0; i < versions.length(); i++) {
 						JSONObject version = versions.getJSONObject(i);
-						Log.d("test", version.getString("headline"));
+						//Log.d("test", version.getString("headline"));
 					}
-					
-					Looper.prepare();
+					Log.e("Wat","Wat");
+					/*Looper.prepare();
 					// Display toast message:
 					Context context = getApplicationContext();
 					CharSequence text = "Successfully loaded json!";
@@ -349,18 +351,38 @@ public class MainActivity extends Activity {
 					
 					jsonLoaded = true;
 					
-					Looper.loop();
+					Looper.loop();*/
+					
+					return null;
 				}
 				catch (Exception e) {
 					e.printStackTrace();
 				}
 				return null;
 			}
+			
+		    @Override
+		    protected void onPostExecute(Void v) {
+		    	Log.d("Entering Post", "Post");
+		    	try{
+		    		LoadBooks();
+		    	}
+		    	catch(Exception e) {
+					e.printStackTrace();
+		    	}
+		    }
 
 
 		}
 		final GetJSON json = new GetJSON(this);
 		json.execute();
+		/*
+		while(true){
+        	if (jsonLoaded){
+        		json.cancel(true);
+        	}
+        }*/
+		/*
 	     // instantiate it within the onCreate method
  		mProgressDialog = new ProgressDialog(this);
  		mProgressDialog.setMessage("A message");
@@ -372,26 +394,18 @@ public class MainActivity extends Activity {
  		    public void onCancel(DialogInterface dialog) {
  		        json.cancel(true);
  		    }
- 		});	
+ 		});	*/
 		
 	}
 	
 	private void LoadBooks() throws JSONException {
-		
-		
+			
 		for (int i = 0; i < versions.length(); i++) {
 			JSONObject version = versions.getJSONObject(i);
-			Log.d("test", version.getString("headline"));
-			BookshelfModel.Items.add(new BookshelfItem(i+1, "book2.png", version.getString("name")));
+			BookshelfModel.Items.add(new BookshelfItem(i, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date")));
 		}
-		
-        String[] bids = new String[BookshelfModel.Items.size()];
-        for (int i= 0; i < bids.length; i++){
-
-            bids[i] = Integer.toString(i+1);
-        }
-        BookshelfAdapter badapter = new BookshelfAdapter(this,R.layout.bookshelf_row,bids);
-        bookshelfListView.setAdapter(badapter);
+		bookshelfListView.setAdapter(new BookshelfAdapter(this, BookshelfModel.Items));
+        bookshelfListView.setOnItemClickListener(new BookshelfClickListener());
 		
 	}
 	
@@ -428,8 +442,8 @@ public class MainActivity extends Activity {
 			result = sb.toString();
 			// Remove first and last letters (who are both '"' and confuse the JSON object parser):
 			result = result.substring(1, result.length()-1);
-			Log.d("test", "JSON has been read:" + result);    
-			Log.d("test", result.toString());          
+			//Log.d("test", "JSON has been read:" + result);    
+			//Log.d("test", result.toString());          
 		} catch(Exception e) {
 			Log.d("test", "Error reading JSON");
 			return null;

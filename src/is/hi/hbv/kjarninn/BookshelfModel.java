@@ -25,5 +25,41 @@ public class BookshelfModel {
         }
         return null;
     }
+    
+    public static String getTitle(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                return item.Title;
+            }
+        }
+        return null;
+    }
+    
+    public static String getThumbUrl(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                return item.IconFile;
+            }
+        }
+        return null;
+    }
+    
+    public static String getHeadline(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                return item.Headline;
+            }
+        }
+        return null;
+    }
+    
+    public static String getDate(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                return item.Date;
+            }
+        }
+        return null;
+    }
 
 }
