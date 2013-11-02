@@ -399,13 +399,14 @@ public class MainActivity extends Activity {
 	}
 	
 	private void LoadBooks() throws JSONException {
-			
-		for (int i = 0; i < versions.length(); i++) {
-			JSONObject version = versions.getJSONObject(i);
-			BookshelfModel.Items.add(new BookshelfItem(i, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date")));
+		int id = 0;	
+		for (int i = versions.length(); i > 0; --i) {
+			JSONObject version = versions.getJSONObject(i-1);
+			BookshelfModel.Items.add(new BookshelfItem(id, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date")));
+			id++;
 		}
 		bookshelfListView.setAdapter(new BookshelfAdapter(this, BookshelfModel.Items));
-        bookshelfListView.setOnItemClickListener(new BookshelfClickListener());
+        //bookshelfListView.setOnItemClickListener(new BookshelfClickListener());
 		
 	}
 	
@@ -498,13 +499,13 @@ public class MainActivity extends Activity {
 		}
 	}
 	
-	private class BookshelfClickListener implements ListView.OnItemClickListener {
+	/*private class BookshelfClickListener implements ListView.OnItemClickListener {
 		@Override
 	    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 	            long arg3) {
 			selectBookshelfItem(arg2);
 	    }
-	}
+	}*/
 
 
 public void selectBookshelfItem(int position) {
@@ -550,6 +551,14 @@ public void selectBookshelfItem(int position) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+}
+
+public void BookshelfButtonClick(View v) {
+    int id = v.getId();
+    //-1 síðasta útgáfan er fyrst í adapternum finnum rétta útgáfu
+    int r = versions.length()-id-1;
+    selectBookshelfItem(r);
+    
 }
 		    
 		    

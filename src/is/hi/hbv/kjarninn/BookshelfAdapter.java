@@ -48,6 +48,7 @@ public class BookshelfAdapter extends BaseAdapter {
             holder.headline = (TextView) convertView.findViewById(R.id.headline);
             holder.date = (TextView) convertView.findViewById(R.id.date);
             holder.thumbnail = (ImageView) convertView.findViewById(R.id.thumbnail);
+            holder.button = (Button) convertView.findViewById(R.id.bookButton);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -56,6 +57,7 @@ public class BookshelfAdapter extends BaseAdapter {
         holder.title.setText(BookshelfModel.getTitle(position));
         holder.headline.setText(BookshelfModel.getHeadline(position));
         holder.date.setText(BookshelfModel.getDate(position));
+        holder.button.setId(position);
  
         if (holder.thumbnail != null) {
             new ImageDownloaderTask(holder.thumbnail).execute(BookshelfModel.getThumbUrl(position));
