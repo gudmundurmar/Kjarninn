@@ -9,10 +9,8 @@ public class BookshelfModel {
     public static void LoadModel() {
 
         Items = new ArrayList<BookshelfItem>();
-        /*Items.add(new BookshelfItem(1, "book2.png", "Í lestri blablabla"));
-        Items.add(new BookshelfItem(2, "bookshelf.png", "Blaðahilla"));
-        Items.add(new BookshelfItem(3, "wat.png", "Hjálp"));
-        Items.add(new BookshelfItem(4, "widi.png", "Á vefnum"));*/
+        //Item(id, imageurl, name, headline, date, buttontext);
+
 
     }
 
@@ -57,6 +55,15 @@ public class BookshelfModel {
         for(BookshelfItem item : Items) {
             if (item.Id == id) {
                 return item.Date;
+            }
+        }
+        return null;
+    }
+    
+    public static String getButtonText(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                return item.Buttontext;
             }
         }
         return null;

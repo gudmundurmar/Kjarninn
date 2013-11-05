@@ -71,6 +71,7 @@ public class MainActivity extends Activity {
     public String[] versionNames;
     public File[] localFiles;
     public Button[] bookshelfButtons;
+    public BookshelfAdapter bookshelfadapter;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -292,6 +293,7 @@ public class MainActivity extends Activity {
 	    @Override
 	    protected void onPostExecute(String result) {
 	        mProgressDialog.dismiss();
+	        UpdateView();
 	        if (result != null)
 	            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
 	        else
@@ -319,7 +321,11 @@ public class MainActivity extends Activity {
         try
         {
 	        Intent intent = new Intent(Intent.ACTION_VIEW);
-	        intent.setDataAndType(Uri.fromFile(filz),"application/pdf");
+	        String uritest = (Uri.fromFile(filz)).toString();
+	        String correctedtest = uritest+".pdf";
+	        Uri newUri = Uri.parse(correctedtest);
+	        Log.e("OpenPDF checking path",newUri.toString());
+	        intent.setDataAndType(newUri,"application/pdf");
 	        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 	        startActivity(intent);
         }
@@ -410,11 +416,12 @@ public class MainActivity extends Activity {
 		int id = 0;	
 		for (int i = versions.length(); i > 0; --i) {
 			JSONObject version = versions.getJSONObject(i-1);
-			BookshelfModel.Items.add(new BookshelfItem(id, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date")));
+			BookshelfModel.Items.add(new BookshelfItem(id, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date"), "Sækja"));
 			id++;
 		}
-		bookshelfListView.setAdapter(new BookshelfAdapter(this, BookshelfModel.Items));
-		LoadButtonArray();
+		bookshelfadapter = new BookshelfAdapter(this, BookshelfModel.Items);
+		bookshelfListView.setAdapter(bookshelfadapter);
+		//LoadButtonArray();
 		getFileSizes();
 	}
 	
@@ -432,7 +439,6 @@ public class MainActivity extends Activity {
 			v = bookshelfListView.getAdapter().getView(i, null, null);
 			button = (Button) v.findViewById(i);
 			bookshelfButtons[i] = button;
-			Log.e("Button",Integer.toString(button.getId()));
 		}
 		
 	}
@@ -442,14 +448,19 @@ public class MainActivity extends Activity {
 	//Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
 	private void UpdateView() {	
 		Log.e("Entering","UpdateView()");
-		
-		for (int i = versionNames.length; i > 0; --i) {
+		int length = versionNames.length;
+		for (int i = length; i > 0; --i) {
 			boolean[] localResult = isInLocal(versionNames[i-1],versionsSizes[i-1]);
 			if (localResult[0] && localResult[1]){
 				Log.e("This PDF is ready in local:",versionNames[i-1]);
 				//Change buttons and onclicklisteners
+				BookshelfItem item = BookshelfModel.GetbyId(length-i);
+				item.Buttontext = "Lesa";
+				
 			}
 		}
+		
+		bookshelfadapter.notifyDataSetChanged();
 		
 	}
 
@@ -557,7 +568,7 @@ public void selectBookshelfItem(int position) {
 		//
 		//TODO
 		String urli = version.getString("pdfurl");
-		String nafn = version.getString("headline");
+		String nafn = version.getString("version")+"utg";
 		String[] downloads = new String[2];
 		
 		downloads[0] = urli;
@@ -596,9 +607,26 @@ public void selectBookshelfItem(int position) {
 public void BookshelfButtonClick(View v) {
     int id = v.getId();
     Log.e("ListView Button click","id="+id);
-    //-1 síðasta útgáfan er fyrst í adapternum finnum rétta útgáfu
-    int r = versions.length()-id-1;
-    selectBookshelfItem(r);
+    Button button = (Button) v.findViewById(id);
+    String buttontext = button.getText().toString();
+    String selectedFilename = versionNames[versionNames.length-id-1];
+    Log.e("Selected file:",selectedFilename);
+    
+    if ( buttontext.equals("Lesa")){
+	    for (int k=0; k<localFiles.length; k++){
+	    	String filename = localFiles[k].getName();
+	    	if (filename.equals(selectedFilename)){
+	    		Log.e("Opening: ", localFiles[k].getName());
+	    		OpenPDF(localFiles[k]);
+	    	}
+	    	
+	    }
+    }
+    else{
+	    //-1 síðasta útgáfan er fyrst í adapternum finnum rétta útgáfu
+	    int r = versions.length()-id-1;
+	    selectBookshelfItem(r);
+    }
     
 }
 
@@ -659,7 +687,7 @@ public void getFileSizes(){
 				    connection.connect();
 				    int file_size = connection.getContentLength();
 				    versionsSizes[i] = file_size;
-				    versionNames[i] = version.getString("headline");
+				    versionNames[i] = version.getString("version")+"utg";
 				    
 				}
 				catch (Exception e){

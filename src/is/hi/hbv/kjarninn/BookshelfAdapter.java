@@ -58,6 +58,7 @@ public class BookshelfAdapter extends BaseAdapter {
         holder.headline.setText(BookshelfModel.getHeadline(position));
         holder.date.setText(BookshelfModel.getDate(position));
         holder.button.setId(position);
+        holder.button.setText(BookshelfModel.getButtonText(position));
         
  
         if (holder.thumbnail != null) {
