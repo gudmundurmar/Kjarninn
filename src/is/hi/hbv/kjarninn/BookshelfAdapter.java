@@ -13,8 +13,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
  
 public class BookshelfAdapter extends BaseAdapter {
- 
-    private ArrayList listData;
+
+	private ArrayList listData;
  
     private LayoutInflater layoutInflater;
  
@@ -58,6 +58,7 @@ public class BookshelfAdapter extends BaseAdapter {
         holder.headline.setText(BookshelfModel.getHeadline(position));
         holder.date.setText(BookshelfModel.getDate(position));
         holder.button.setId(position);
+        
  
         if (holder.thumbnail != null) {
             new ImageDownloaderTask(holder.thumbnail).execute(BookshelfModel.getThumbUrl(position));
