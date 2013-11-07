@@ -69,8 +69,8 @@ public class MainActivity extends Activity {
     //versionSizes = array of pdf file sizes [1.utg.....nyjasta.utg]
     public int[] versionsSizes;
     public String[] versionNames;
+    
     public File[] localFiles;
-    public Button[] bookshelfButtons;
     public BookshelfAdapter bookshelfadapter;
 	
 	/**
@@ -97,71 +97,6 @@ public class MainActivity extends Activity {
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
         Log.d("Getting","Json");
         getJson();
-        
-        //Log.d("Testing isInLocal",".");
-        //isInLocal("Utgafa009.pdf",19006440);
-
-        
-		/*
-		
-		List<Button> buttons = new ArrayList<Button>();
-		
-		File storageDir = getFilesDir();
-		localstorage localClass = new localstorage();
-		
-		// this needs to be bound to a button instead of calling it here
-		//
-		//TODO
-		//Herna ˛arf a breyta..Mˆgulega b˙a til fall hÈrna
-		String urli = "http://kjarninn.is/kerfi/wp-content/uploads/2013/10/2013_10_17.pdf";
-		String nafn = "NafnTest";
-		String[] downloads = new String[2];
-		
-		downloads[0] = urli;
-		downloads[1] = nafn;
-		final StartDownload download = new StartDownload(this);
-		
-		// instantiate it within the onCreate method
-		mProgressDialog = new ProgressDialog(this);
-		mProgressDialog.setMessage("A message");
-		mProgressDialog.setIndeterminate(true);
-		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		mProgressDialog.setCancelable(true);
-
-		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-		    public void onCancel(DialogInterface dialog) {
-		        download.cancel(true);
-		    }
-		});	
-		
-		
-		download.execute(downloads);
-
-		final File[] fileList = localClass.FetchFiles(storageDir);
-		String[] filenames = localClass.FetchNames(storageDir);
-		
-		LinearLayout ll = (LinearLayout)findViewById(R.id.books);
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		
-		for (int i=0; i < fileList.length; i++)
-		{
-			Button myButton = new Button(this);
-			//Button ids in books (view) will start at 1000 
-			myButton.setId(1000+i);
-			myButton.setText(filenames[i]);
-			myButton.setOnClickListener(new Button.OnClickListener() {
-				public void onClick(View ll) {
-					Log.d("Button Pressed Id:", String.valueOf(ll.getId()));
-					Log.d("Filelist0=",fileList[0].getName());
-					OpenPDF(fileList[0]);
-				}
-			});
-			ll.addView(myButton, lp);
-			buttons.add(myButton);
-		}
-		for (Button b:buttons){
-			Log.d("Id of Button " , String.valueOf(b.getId()));
-		} */
 		
     }
 	
@@ -217,8 +152,9 @@ public class MainActivity extends Activity {
 				}
 				else{
 					String urlToPdf = savePdfAs[0];
-	                FileOutputStream fos = openFileOutput(namePdf, Context.MODE_PRIVATE);
+	                FileOutputStream fos = openFileOutput(namePdf, Context.MODE_WORLD_READABLE);
 	                String path = getFilesDir().getAbsolutePath() + "/" + namePdf + ".pdf"; // path to the root of internal memory.
+	                Log.e("Saving to path:",path);
 	                File f = new File(path);
 	                f.setReadable(true, false);
 	                URL url = new URL(urlToPdf);
@@ -322,7 +258,7 @@ public class MainActivity extends Activity {
         {
 	        Intent intent = new Intent(Intent.ACTION_VIEW);
 	        String uritest = (Uri.fromFile(filz)).toString();
-	        String correctedtest = uritest+".pdf";
+	        String correctedtest = uritest.substring(7)+".pdf";
 	        Uri newUri = Uri.parse(correctedtest);
 	        Log.e("OpenPDF checking path",newUri.toString());
 	        intent.setDataAndType(newUri,"application/pdf");
@@ -427,7 +363,7 @@ public class MainActivity extends Activity {
 	
 
 	
-	
+	/*
 	//Load generated buttons to array
 	private void LoadButtonArray() {
 		View v;
@@ -441,7 +377,7 @@ public class MainActivity extends Activity {
 			bookshelfButtons[i] = button;
 		}
 		
-	}
+	}*/
 
 	
 	
@@ -459,7 +395,7 @@ public class MainActivity extends Activity {
 				
 			}
 		}
-		
+		//Reload adapter with new Model values ( refresh list view )
 		bookshelfadapter.notifyDataSetChanged();
 		
 	}
@@ -575,9 +511,10 @@ public void selectBookshelfItem(int position) {
 		downloads[1] = nafn;
 		final StartDownload download = new StartDownload(this);
 		
+		String download_nafn = version.getString("version")+". útgáfu";
 		// instantiate it within the onCreate method
 		mProgressDialog = new ProgressDialog(this);
-		mProgressDialog.setMessage("Downloading "+nafn);
+		mProgressDialog.setMessage("Sæki "+download_nafn);
 		mProgressDialog.setIndeterminate(true);
 		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		mProgressDialog.setCancelable(true);
