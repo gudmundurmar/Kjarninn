@@ -4,20 +4,13 @@ public class BookshelfItem {
 
     public int Id;
     public String IconFile;
-    public String Title;
-    public String Headline;
-    public String Date;
-    public String Buttontext;
+    public String Name;
 
-    public BookshelfItem(int id, String iconFile, String title, String headline, String date, String buttontext) {
+    public BookshelfItem(int id, String iconFile, String name) {
 
         Id = id;
         IconFile = iconFile;
-        Title = title;
-        Headline = headline;
-        Date = date;
-        Buttontext = buttontext;
-        
+        Name = name;
 
     }
 

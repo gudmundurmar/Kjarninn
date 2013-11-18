@@ -9,8 +9,10 @@ public class BookshelfModel {
     public static void LoadModel() {
 
         Items = new ArrayList<BookshelfItem>();
-        //Item(id, imageurl, name, headline, date, buttontext);
-
+        /*Items.add(new BookshelfItem(1, "book2.png", "Í lestri blablabla"));
+        Items.add(new BookshelfItem(2, "bookshelf.png", "Blaðahilla"));
+        Items.add(new BookshelfItem(3, "wat.png", "Hjálp"));
+        Items.add(new BookshelfItem(4, "widi.png", "Á vefnum"));*/
 
     }
 
@@ -19,51 +21,6 @@ public class BookshelfModel {
         for(BookshelfItem item : Items) {
             if (item.Id == id) {
                 return item;
-            }
-        }
-        return null;
-    }
-    
-    public static String getTitle(int id){
-        for(BookshelfItem item : Items) {
-            if (item.Id == id) {
-                return item.Title;
-            }
-        }
-        return null;
-    }
-    
-    public static String getThumbUrl(int id){
-        for(BookshelfItem item : Items) {
-            if (item.Id == id) {
-                return item.IconFile;
-            }
-        }
-        return null;
-    }
-    
-    public static String getHeadline(int id){
-        for(BookshelfItem item : Items) {
-            if (item.Id == id) {
-                return item.Headline;
-            }
-        }
-        return null;
-    }
-    
-    public static String getDate(int id){
-        for(BookshelfItem item : Items) {
-            if (item.Id == id) {
-                return item.Date;
-            }
-        }
-        return null;
-    }
-    
-    public static String getButtonText(int id){
-        for(BookshelfItem item : Items) {
-            if (item.Id == id) {
-                return item.Buttontext;
             }
         }
         return null;
