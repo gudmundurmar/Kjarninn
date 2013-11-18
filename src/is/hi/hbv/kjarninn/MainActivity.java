@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -63,6 +64,14 @@ public class MainActivity extends Activity {
     
     //Navbar stuff
     private ListView navbarListView;
+    private ListView bookshelfListView;
+    public JSONArray versions;
+    //versionSizes = array of pdf file sizes [1.utg.....nyjasta.utg]
+    public int[] versionsSizes;
+    public String[] versionNames;
+    
+    public File[] localFiles;
+    public BookshelfAdapter bookshelfadapter;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -74,76 +83,20 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
         NavbarModel.LoadModel();
+        BookshelfModel.LoadModel();
         navbarListView = (ListView) findViewById(R.id.navbar);
+        bookshelfListView = (ListView) findViewById(R.id.bookshelf);
         String[] ids = new String[NavbarModel.Items.size()];
         for (int i= 0; i < ids.length; i++){
 
             ids[i] = Integer.toString(i+1);
         }
-        
         NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
         navbarListView.setAdapter(adapter);
+
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
-		
-		
-		List<Button> buttons = new ArrayList<Button>();
-		
-		File storageDir = getFilesDir();
-		localstorage localClass = new localstorage();
-		
-		// this needs to be bound to a button instead of calling it here
-		//
-		//TODO
-		//Herna ˛arf a breyta..Mˆgulega b˙a til fall hÈrna
-		String urli = "http://kjarninn.is/kerfi/wp-content/uploads/2013/10/2013_10_17.pdf";
-		String nafn = "NafnTest";
-		String[] downloads = new String[2];
-		
-		downloads[0] = urli;
-		downloads[1] = nafn;
-		final StartDownload download = new StartDownload(this);
-		
-		// instantiate it within the onCreate method
-		mProgressDialog = new ProgressDialog(this);
-		mProgressDialog.setMessage("A message");
-		mProgressDialog.setIndeterminate(true);
-		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		mProgressDialog.setCancelable(true);
-
-		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-		    public void onCancel(DialogInterface dialog) {
-		        download.cancel(true);
-		    }
-		});	
-		
-		
-		download.execute(downloads);
-
-		final File[] fileList = localClass.FetchFiles(storageDir);
-		String[] filenames = localClass.FetchNames(storageDir);
-		
-		LinearLayout ll = (LinearLayout)findViewById(R.id.books);
-		LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-		
-		for (int i=0; i < fileList.length; i++)
-		{
-			Button myButton = new Button(this);
-			//Button ids in books (view) will start at 1000 
-			myButton.setId(1000+i);
-			myButton.setText(filenames[i]);
-			myButton.setOnClickListener(new Button.OnClickListener() {
-				public void onClick(View ll) {
-					Log.d("Button Pressed Id:", String.valueOf(ll.getId()));
-					Log.d("Filelist0=",fileList[0].getName());
-					OpenPDF(fileList[0]);
-				}
-			});
-			ll.addView(myButton, lp);
-			buttons.add(myButton);
-		}
-		for (Button b:buttons){
-			Log.d("Id of Button " , String.valueOf(b.getId()));
-		}
+        Log.d("Getting","Json");
+        getJson();
 		
     }
 	
@@ -174,39 +127,65 @@ public class MainActivity extends Activity {
 	            HttpURLConnection connection = null;
 			try {
 				String namePdf = savePdfAs[1];
-				String urlToPdf = savePdfAs[0];
-                FileOutputStream fos = openFileOutput(namePdf, Context.MODE_PRIVATE);
-                String path = getFilesDir().getAbsolutePath() + "/" + namePdf + ".pdf"; // path to the root of internal memory.
-                File f = new File(path);
-                f.setReadable(true, false);
-                URL url = new URL(urlToPdf);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-                
-             // expect HTTP 200 OK, so we don't mistakenly save error report 
-                // instead of the file
-                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
-                     return "Server returned HTTP " + connection.getResponseCode() 
-                         + " " + connection.getResponseMessage();
-
-                
-                int file_size = connection.getContentLength();
-                Log.e("file_size", Integer.toString(file_size));
-                input = connection.getInputStream();
-                
-                byte[] buffer = new byte[1024];
-                int read;
-                long total = 0;
-                while ((read = input.read(buffer)) != -1) {
-                	if (isCancelled())
-                        return null;
-                    total += read;
-                    if (file_size > 0) // only if total length is known
-                        publishProgress((int) (total * 100 / file_size));
-                	fos.write(buffer, 0, read);
-                }
-                fos.close();
-                input.close(); 
+				long correctPdfSize = 0;
+				
+				for (int j=0; j<versionNames.length; j++){
+					Log.d(namePdf,versionNames[j]+"_//_"+ Integer.toString(versionsSizes[j]));
+					if (namePdf.equals(versionNames[j])){
+						correctPdfSize = versionsSizes[j];
+					}
+				}
+				
+				Log.e("Start download checking current local size:",Long.toString(correctPdfSize));
+				
+				
+				//Setja inn namePdf og correct! file size í isInLocal
+				boolean[] localCheckResult = isInLocal(namePdf,correctPdfSize);
+				
+				if (localCheckResult[0] && localCheckResult[1]){
+						Log.e("Correct file exists","Cancelling download");
+						cancel(true);
+				}
+				
+				if (isCancelled()){
+					return null;
+				}
+				else{
+					String urlToPdf = savePdfAs[0];
+	                FileOutputStream fos = openFileOutput(namePdf, Context.MODE_WORLD_READABLE);
+	                String path = getFilesDir().getAbsolutePath() + "/" + namePdf + ".pdf"; // path to the root of internal memory.
+	                Log.e("Saving to path:",path);
+	                File f = new File(path);
+	                f.setReadable(true, false);
+	                URL url = new URL(urlToPdf);
+	                connection = (HttpURLConnection) url.openConnection();
+	                connection.connect();
+	                
+	             // expect HTTP 200 OK, so we don't mistakenly save error report 
+	                // instead of the file
+	                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK)
+	                     return "Server returned HTTP " + connection.getResponseCode() 
+	                         + " " + connection.getResponseMessage();
+	
+	                
+	                int file_size = connection.getContentLength();
+	                Log.d("Download: file_size", Integer.toString(file_size));
+	                input = connection.getInputStream();
+	                
+	                byte[] buffer = new byte[1024];
+	                int read;
+	                long total = 0;
+	                while ((read = input.read(buffer)) != -1) {
+	                	if (isCancelled())
+	                        return null;
+	                    total += read;
+	                    if (file_size > 0) // only if total length is known
+	                        publishProgress((int) (total * 100 / file_size));
+	                	fos.write(buffer, 0, read);
+	                }
+	                fos.close();
+	                input.close();
+				}
                 
             } 
             catch (Exception e) {
@@ -219,7 +198,8 @@ public class MainActivity extends Activity {
                     if (input != null)
                     	input.close();
                 } 
-                catch (IOException ignored) {Log.d("error", "her"); }
+                catch (IOException ignored) {
+                }
 
                 if (connection != null)
                 	connection.disconnect();
@@ -248,8 +228,8 @@ public class MainActivity extends Activity {
 
 	    @Override
 	    protected void onPostExecute(String result) {
-	    	Log.d("error5", "her");
 	        mProgressDialog.dismiss();
+	        UpdateView();
 	        if (result != null)
 	            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
 	        else
@@ -277,7 +257,11 @@ public class MainActivity extends Activity {
         try
         {
 	        Intent intent = new Intent(Intent.ACTION_VIEW);
-	        intent.setDataAndType(Uri.fromFile(filz),"application/pdf");
+	        String uritest = (Uri.fromFile(filz)).toString();
+	        String correctedtest = uritest.substring(7)+".pdf";
+	        Uri newUri = Uri.parse(correctedtest);
+	        Log.e("OpenPDF checking path",newUri.toString());
+	        intent.setDataAndType(newUri,"application/pdf");
 	        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 	        startActivity(intent);
         }
@@ -291,27 +275,28 @@ public class MainActivity extends Activity {
 	/**
 	 * Get JSON from server on button click:
 	 */
-	public void getJson(View view) {
-		final String tag = "test";
-		Log.d(tag, "Clicked JSON button");
+	public void getJson() {
 		
-		
-		// Fire off a thread to do some work that we shouldn't do directly in the UI thread
-		Thread getJsonT = new Thread(new Runnable(){
+		class GetJSON extends AsyncTask <Void, Void, Void>{
+			private Context context;
+			// Fire off a thread to do some work that we shouldn't do directly in the UI thread
+			public GetJSON(Context context) {
+				//constructor
+				this.context = context;
+			}	
+
 			@Override
-			public void run() {
+			protected Void doInBackground(Void...as) {
 				try {
-					JSONObject json = getJson("http://hugihlynsson.com/hi/kjarninn/kjarninn.php");
+					JSONObject json = getJson("http://146.185.137.56");
 					Log.d("test", "Finished fetching JSON: ");
 					Log.d("test", json.toString());
 					
-					JSONArray versions = json.getJSONArray("versions");
-					
+					versions = json.getJSONArray("versions");
+					/*
 					for (int i = 0; i < versions.length(); i++) {
 						JSONObject version = versions.getJSONObject(i);
-						Log.d("test", version.getString("headline"));
 					}
-					
 					Looper.prepare();
 					// Display toast message:
 					Context context = getApplicationContext();
@@ -321,15 +306,104 @@ public class MainActivity extends Activity {
 					Toast toast = Toast.makeText(context, text, duration);
 					toast.show();
 					
-					Looper.loop();
+					Looper.loop();*/
+					
+					return null;
 				}
 				catch (Exception e) {
 					e.printStackTrace();
 				}
+				return null;
 			}
-		});
-		getJsonT.start();
+			
+		    @Override
+		    protected void onPostExecute(Void v) {
+		    	Log.d("Entering Post", "Post");
+		    	try{
+		    		LoadBooks();
+		    	}
+		    	catch(Exception e) {
+					e.printStackTrace();
+		    	}
+		    }
+
+
+		}
+		final GetJSON json = new GetJSON(this);
+		json.execute();
+
+		/*
+	     // instantiate it within the onCreate method
+ 		mProgressDialog = new ProgressDialog(this);
+ 		mProgressDialog.setMessage("A message");
+ 		mProgressDialog.setIndeterminate(true);
+ 		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+ 		//mProgressDialog.setCancelable(true);
+
+ 		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+ 		    public void onCancel(DialogInterface dialog) {
+ 		        json.cancel(true);
+ 		    }
+ 		});	*/
+		
 	}
+	
+	private void LoadBooks() throws JSONException {
+		int id = 0;	
+		for (int i = versions.length(); i > 0; --i) {
+			JSONObject version = versions.getJSONObject(i-1);
+			BookshelfModel.Items.add(new BookshelfItem(id, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date"), "Sækja"));
+			id++;
+		}
+		bookshelfadapter = new BookshelfAdapter(this, BookshelfModel.Items);
+		bookshelfListView.setAdapter(bookshelfadapter);
+		//LoadButtonArray();
+		getFileSizes();
+	}
+	
+
+	
+	/*
+	//Load generated buttons to array
+	private void LoadButtonArray() {
+		View v;
+		Button button;
+		int listLength = bookshelfListView.getCount();
+		bookshelfButtons = new Button[listLength];
+		
+		for (int i = 0; i< listLength; i++) {
+			v = bookshelfListView.getAdapter().getView(i, null, null);
+			button = (Button) v.findViewById(i);
+			bookshelfButtons[i] = button;
+		}
+		
+	}*/
+
+	
+	
+	//Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
+	private void UpdateView() {	
+		Log.e("Entering","UpdateView()");
+		int length = versionNames.length;
+		for (int i = length; i > 0; --i) {
+			boolean[] localResult = isInLocal(versionNames[i-1],versionsSizes[i-1]);
+			if (localResult[0] && localResult[1]){
+				Log.e("This PDF is ready in local:",versionNames[i-1]);
+				//Change buttons and onclicklisteners
+				BookshelfItem item = BookshelfModel.GetbyId(length-i);
+				item.Buttontext = "Lesa";
+				
+			}
+		}
+		//Reload adapter with new Model values ( refresh list view )
+		bookshelfadapter.notifyDataSetChanged();
+		
+	}
+
+	
+	
+	
+	
 	
 	// Fetches JSON from URL and returns object:
 	public static JSONObject getJson(String url){
@@ -362,10 +436,13 @@ public class MainActivity extends Activity {
 			}
 			is.close();
 			result = sb.toString();
+
+			Log.d("text", result);
 			// Remove first and last letters (who are both '"' and confuse the JSON object parser):
-			result = result.substring(1, result.length()-1);
-			Log.d("test", "JSON has been read:" + result);    
-			Log.d("test", result.toString());          
+			//result = result.substring(1, result.length()-1);
+			
+			//Log.d("test", "JSON has been read:" + result);    
+			//Log.d("test", result.toString());          
 		} catch(Exception e) {
 			Log.d("test", "Error reading JSON");
 			return null;
@@ -419,6 +496,167 @@ public class MainActivity extends Activity {
 		    default:
 		}
 	}
-		    
+
+
+public void selectBookshelfItem(int position) {
+	try {
+		JSONObject version = versions.getJSONObject(position);
+		Log.d("Selected Bookshelf Item", version.getString("pdfurl"));
+		
+		// this needs to be bound to a button instead of calling it here
+		//
+		//TODO
+		String urli = version.getString("pdfurl");
+		String nafn = version.getString("version")+"utg";
+		String[] downloads = new String[2];
+		
+		downloads[0] = urli;
+		downloads[1] = nafn;
+		final StartDownload download = new StartDownload(this);
+		
+		String download_nafn = version.getString("version")+". útgáfu";
+		// instantiate it within the onCreate method
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setMessage("Sæki "+download_nafn);
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		mProgressDialog.setCancelable(true);
+
+		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+		    public void onCancel(DialogInterface dialog) {
+		        download.cancel(true);
+		    }
+		});	
+		
+		Log.d("Starting Download",nafn);
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		    download.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, downloads);
+		else
+		    download.execute(downloads);
+
+		
+	
+	} 
+	catch (JSONException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
+
+public void BookshelfButtonClick(View v) {
+    int id = v.getId();
+    Log.e("ListView Button click","id="+id);
+    Button button = (Button) v.findViewById(id);
+    String buttontext = button.getText().toString();
+    String selectedFilename = versionNames[versionNames.length-id-1];
+    Log.e("Selected file:",selectedFilename);
+    
+    if ( buttontext.equals("Lesa")){
+	    for (int k=0; k<localFiles.length; k++){
+	    	String filename = localFiles[k].getName();
+	    	if (filename.equals(selectedFilename)){
+	    		Log.e("Opening: ", localFiles[k].getName());
+	    		OpenPDF(localFiles[k]);
+	    	}
+	    	
+	    }
+    }
+    else{
+	    //-1 síðasta útgáfan er fyrst í adapternum finnum rétta útgáfu
+	    int r = versions.length()-id-1;
+	    selectBookshelfItem(r);
+    }
+    
+}
+
+
+//What it does:
+//Checks if filename is in local storage and if correct size (not a partial file)
+public boolean[] isInLocal(String filename, long filesize) {
+	 UpdatelocalFiles();
+	 
+	 boolean[] result = new boolean[2];
+	 result[0] = false;
+	 result[1] = false;
+	 
+	 //Log.e("isInLocal Inputs:","("+filename+","+Long.toString(filesize)+")");
+	 
+     for (int i=0; i < localFiles.length; i++)
+     {
+         if (filename.equals(localFiles[i].getName())){
+        	 result[0] = true;
+        	 if (filesize == localFiles[i].length()){
+        		 //Log.e("Local File size:",Long.toString(localFiles[i].length()));
+        		 result[1] = true;
+        	 }
+        	 
+         }
+     }
+     /*
+     String result0 = Boolean.toString(result[0]);
+     String result1 = Boolean.toString(result[0]);
+     
+     Log.e("isInLocalResult:", "( "+result0+" , "+result1+" )");*/
+     
+	return result;
+}
+
+//Assign pdf file sizes to array from latest to newest
+public void getFileSizes(){
+	
+	versionsSizes = new int[versions.length()];
+	versionNames = new String[versions.length()];
+	
+	class GetFileSizes extends AsyncTask <Void, Void, Void>{
+		private Context context;
+		
+		public GetFileSizes (){
+
+		}
+	
+		@Override
+		protected Void doInBackground(Void...as) {
+			for (int i=0; i < versions.length(); i++){
+				try{
+					JSONObject version = versions.getJSONObject(i);
+					String urlToPdf = version.getString("pdfurl");
+					HttpURLConnection connection = null;
+					URL url = new URL(urlToPdf);
+				    connection = (HttpURLConnection) url.openConnection();
+				    connection.connect();
+				    int file_size = connection.getContentLength();
+				    versionsSizes[i] = file_size;
+				    versionNames[i] = version.getString("version")+"utg";
+				    
+				}
+				catch (Exception e){
+					e.printStackTrace();
+				}
+			}
+			return null;
+		}
+		
+	    @Override
+	    protected void onPostExecute(Void v) {
+	    	
+	    	/*Log.e("getFileSizes()","Printing correct filesizes");
+	    	for (int n=0; n < versions.length(); n++){
+	    		Log.e("File: "+versionNames[n],Integer.toString(versionsSizes[n]));
+	    	}*/
+	    	UpdateView();
+	    }
+	    
+	    
+	}	
+	final GetFileSizes sizes = new GetFileSizes();
+	sizes.execute();
+}
+
+public void UpdatelocalFiles(){
+	localFiles = getFilesDir().listFiles();
+}
+	
+
 		    
 }
