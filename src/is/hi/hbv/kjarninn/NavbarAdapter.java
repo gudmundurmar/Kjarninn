@@ -34,8 +34,8 @@ public class NavbarAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View rowView = inflater.inflate(rowResourceId, parent, false);
-        ImageView imageView = (ImageView) rowView.findViewById(R.id.NavbarimageView);
-        TextView textView = (TextView) rowView.findViewById(R.id.NavbartextView);
+        ImageView imageView = (ImageView) rowView.findViewById(R.id.imageView);
+        TextView textView = (TextView) rowView.findViewById(R.id.textView);
 
         int id = Integer.parseInt(Ids[position]);
         String imageFile = NavbarModel.GetbyId(id).IconFile;
