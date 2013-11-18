@@ -288,9 +288,9 @@ public class MainActivity extends Activity {
 			@Override
 			protected Void doInBackground(Void...as) {
 				try {
-					JSONObject json = getJson("http://hugihlynsson.com/hi/kjarninn/kjarninn.php");
+					JSONObject json = getJson("http://146.185.137.56");
 					Log.d("test", "Finished fetching JSON: ");
-					//Log.d("test", json.toString());
+					Log.d("test", json.toString());
 					
 					versions = json.getJSONArray("versions");
 					/*
@@ -436,8 +436,11 @@ public class MainActivity extends Activity {
 			}
 			is.close();
 			result = sb.toString();
+
+			Log.d("text", result);
 			// Remove first and last letters (who are both '"' and confuse the JSON object parser):
-			result = result.substring(1, result.length()-1);
+			//result = result.substring(1, result.length()-1);
+			
 			//Log.d("test", "JSON has been read:" + result);    
 			//Log.d("test", result.toString());          
 		} catch(Exception e) {
