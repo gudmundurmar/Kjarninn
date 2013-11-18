@@ -272,7 +272,7 @@ public class MainActivity extends Activity {
 			@Override
 			protected Void doInBackground(Void...as) {
 				try {
-					JSONObject json = getJson("http://146.185.137.56");
+					JSONObject json = getJson("http://kjarninn.com/json");
 					Log.d("test", "Finished fetching JSON: ");
 					
 					versions = json.getJSONArray("versions");
