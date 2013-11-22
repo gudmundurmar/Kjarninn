@@ -49,6 +49,7 @@ public class BookshelfAdapter extends BaseAdapter {
             holder.date = (TextView) convertView.findViewById(R.id.date);
             holder.thumbnail = (ImageView) convertView.findViewById(R.id.thumbnail);
             holder.button = (Button) convertView.findViewById(R.id.bookButton);
+            holder.deleteButton = (Button) convertView.findViewById(R.id.deleteButton);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -56,9 +57,17 @@ public class BookshelfAdapter extends BaseAdapter {
         
         holder.title.setText(BookshelfModel.getTitle(position));
         holder.headline.setText(BookshelfModel.getHeadline(position));
-        holder.date.setText(BookshelfModel.getDate(position));
+        holder.date.setText("- "+BookshelfModel.getDate(position));
         holder.button.setId(position);
         holder.button.setText(BookshelfModel.getButtonText(position));
+        holder.deleteButton.setId(position+1000);
+        
+        if (BookshelfModel.showDelete(position)){
+        	holder.deleteButton.setVisibility(View.VISIBLE);
+        }
+        else{
+        	holder.deleteButton.setVisibility(View.GONE);
+        }
         
  
         if (holder.thumbnail != null) {
@@ -75,6 +84,7 @@ public class BookshelfAdapter extends BaseAdapter {
         ImageView thumbnail;
         ProgressBar progressBar;
         Button button;
+        Button deleteButton;
         
     }
 }

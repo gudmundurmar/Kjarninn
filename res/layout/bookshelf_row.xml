@@ -44,8 +44,9 @@
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:paddingRight="5dp"
+        android:layout_toRightOf="@id/title"
+        android:paddingLeft="5dp"
+        android:paddingTop="7dp"
         android:text=""
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
@@ -60,11 +61,28 @@
     
     <Button 
         android:id="@+id/bookButton"
-        android:layout_marginTop="20dip"
+        android:layout_marginTop="45dip"
         android:layout_alignParentRight="true"
+        android:background="#006f31"
         android:layout_width="80dp"
-        android:layout_height="50dp"
+        android:layout_height="35dp"
         android:visibility="visible"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
         android:onClick="BookshelfButtonClick"/>
+    
+    <Button 
+        android:id="@+id/deleteButton"
+        android:layout_marginTop="5dip"
+        android:layout_alignParentRight="true"
+        android:background="#8c0707"
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:visibility="gone"
+        android:text="Eyða"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:onClick="DeleteButtonClick"/>
+    	
  
 </RelativeLayout>
