@@ -3,6 +3,7 @@ package is.hi.hbv.kjarninn;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -60,7 +61,7 @@ public class MainActivity extends Activity {
     public File[] localFiles;
     public BookshelfAdapter bookshelfadapter;
     private static Context context;
-    public localstorage_helper localstorage;
+    public static localstorage_helper localstorage;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -89,6 +90,7 @@ public class MainActivity extends Activity {
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
         
         Log.d("Getting","Json");
+
         getJson();
 		
     }
@@ -289,6 +291,7 @@ public class MainActivity extends Activity {
 				}
 				catch (Exception e) {
 					e.printStackTrace();
+					JsonFallback();
 				}
 				return null;
 			}
@@ -330,6 +333,7 @@ public class MainActivity extends Activity {
 	//Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
 	private void UpdateView() {	
 		Log.d("Entering","UpdateView()");
+		Log.e("VersionNames",versionNames[3]);
 		int length = versionNames.length;
 		for (int i = length; i > 0; --i) {
 			boolean[] localResult = localstorage.isInLocal(versionNames[i-1],versionsSizes[i-1]);
@@ -385,6 +389,7 @@ public class MainActivity extends Activity {
 			}
 			is.close();
 			result = sb.toString();
+			localstorage.writeToFile(result,"data.json");
 			
 		} catch(Exception e) {
 			Log.d("test", "Error reading JSON");
@@ -495,14 +500,8 @@ public void BookshelfButtonClick(View v) {
     String selectedFilename = versionNames[versionNames.length-id-1];
     
     if ( buttontext.equals("Lesa")){
-	    for (int k=0; k<localFiles.length; k++){
-	    	String filename = localFiles[k].getName();
-	    	if (filename.equals(selectedFilename)){
-	    		Log.d("Opening: ", localFiles[k].getName());
-	    		OpenPDF(localFiles[k]);
-	    	}
-	    	
-	    }
+    	File file = localstorage.getFile(selectedFilename);
+    	OpenPDF(file);
     }
     else{
 	    //-1 síðasta útgáfan er fyrst í adapternum finnum rétta útgáfu
@@ -520,8 +519,7 @@ public void DeleteButtonClick(View v) {
     Log.d("Deleting...",versionNames[versionNames.length-id+1000-1]);
 	File dir = getFilesDir();
 	File file = new File(dir, versionNames[versionNames.length-id+1000-1]);
-	boolean deleted = file.delete();
-	Log.d("deleted:", Boolean.toString(deleted));
+	localstorage.deleteFromLocal(file);
 	BookshelfItem item = BookshelfModel.GetbyId(id-1000);
 	item.Buttontext = "Sækja";
    
@@ -553,7 +551,9 @@ public void getFileSizes(){
 				    connection = (HttpURLConnection) url.openConnection();
 				    connection.connect();
 				    int file_size = connection.getContentLength();
+				    //Critical laga
 				    versionsSizes[i] = file_size;
+				    //Critical þarf að laga ef ekki nettenging
 				    versionNames[i] = version.getString("version")+"utg.pdf";
 				    
 				}
@@ -579,6 +579,42 @@ public void getFileSizes(){
 
 public static Context getAppContext() {
     return context;
+}
+
+public Void JsonFallback(){
+	File jsonData = localstorage.getFile("data.json");
+	StringBuilder text = new StringBuilder();
+	BufferedReader br = null;
+
+	try {
+	    br = new BufferedReader(new FileReader(jsonData));
+	    String line;
+
+	    while ((line = br.readLine()) != null) {
+	        text.append(line);
+	        text.append('\n');
+	    }
+	} catch (IOException e) {
+	    // do exception handling
+	} finally {
+	    try { br.close(); } catch (Exception e) { }
+	}
+	String result = text.toString();
+	try{
+		JSONObject json = new JSONObject(result);
+		versions = json.getJSONArray("versions");
+		Log.e("Loaded json backup","");
+		
+	}
+	catch (Exception e){
+		e.printStackTrace();
+	}
+	
+	
+	
+	
+	
+	return null;
 }
 		    
 }

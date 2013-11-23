@@ -1,8 +1,14 @@
 package is.hi.hbv.kjarninn;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import android.content.Context;
+import android.util.Log;
 
 public class localstorage_helper {
 	
@@ -45,8 +51,22 @@ public class localstorage_helper {
 		return null;
 	}
 	
-	public Void saveToLocal(File file){
-		
+	public boolean deleteFromLocal(File file){
+		boolean deleted = file.delete();		
+		return deleted;
+	}
+	
+	
+	public void writeToFile(String data, String filename) {
+		Context context = MainActivity.getAppContext();
+		try{
+			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(filename, Context.MODE_PRIVATE));
+	        outputStreamWriter.write(data);
+	        outputStreamWriter.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 }
