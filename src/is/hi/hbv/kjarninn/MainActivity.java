@@ -19,6 +19,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -272,7 +273,7 @@ public class MainActivity extends Activity {
 			@Override
 			protected Void doInBackground(Void...as) {
 				try {
-					JSONObject json = getJson("http://146.185.137.56");
+					JSONObject json = getJson("http://kjarninn.com/json");
 					Log.d("test", "Finished fetching JSON: ");
 					
 					versions = json.getJSONArray("versions");
@@ -308,7 +309,7 @@ public class MainActivity extends Activity {
 		int id = 0;	
 		for (int i = versions.length(); i > 0; --i) {
 			JSONObject version = versions.getJSONObject(i-1);
-			BookshelfModel.Items.add(new BookshelfItem(id, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date"), "Sækja"));
+			BookshelfModel.Items.add(new BookshelfItem(id, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date"), "Sækja", false));
 			id++;
 		}
 		bookshelfadapter = new BookshelfAdapter(this, BookshelfModel.Items);
@@ -325,12 +326,23 @@ public class MainActivity extends Activity {
 		int length = versionNames.length;
 		for (int i = length; i > 0; --i) {
 			boolean[] localResult = isInLocal(versionNames[i-1],versionsSizes[i-1]);
+			//Button delButton = (Button) findViewById(length-i+1000);
+			//Log.e("length-i+100 =", Integer.toString(length-i+1000));
+			//int hj= delButton.getId();
+			//Log.e("Button ID=",Integer.toString(hj));
+			BookshelfItem item = BookshelfModel.GetbyId(length-i);
 			if (localResult[0] && localResult[1]){
 				Log.d("This PDF is ready in local:",versionNames[i-1]);
 				//Change buttons and onclicklisteners
-				BookshelfItem item = BookshelfModel.GetbyId(length-i);
-				item.Buttontext = "Lesa";
 				
+				item.Buttontext = "Lesa";
+				item.Showdelete = true;
+				//delButton.setVisibility(View.VISIBLE);
+				
+			}
+			else{
+				//delButton.setVisibility(View.GONE);
+				item.Showdelete = false;
 			}
 		}
 		//Reload adapter with new Model values ( refresh list view )
@@ -500,6 +512,25 @@ public void BookshelfButtonClick(View v) {
     }
     
 }
+
+
+public void DeleteButtonClick(View v) {
+    final int id = v.getId();
+    Log.d("Delete Button click","id="+id);
+
+    Log.d("Deleting...",versionNames[versionNames.length-id+1000-1]);
+	File dir = getFilesDir();
+	File file = new File(dir, versionNames[versionNames.length-id+1000-1]);
+	boolean deleted = file.delete();
+	Log.d("deleted:", Boolean.toString(deleted));
+	BookshelfItem item = BookshelfModel.GetbyId(id-1000);
+	item.Buttontext = "Sækja";
+   
+    UpdateView();
+
+    
+}
+
 
 
 //What it does:

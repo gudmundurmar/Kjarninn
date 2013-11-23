@@ -68,5 +68,14 @@ public class BookshelfModel {
         }
         return null;
     }
+    
+    public static Boolean showDelete(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                return item.Showdelete;
+            }
+        }
+        return null;
+    }
 
 }
