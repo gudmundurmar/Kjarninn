@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,6 +59,8 @@ public class MainActivity extends Activity {
     
     public File[] localFiles;
     public BookshelfAdapter bookshelfadapter;
+    private static Context context;
+    public localstorage_helper localstorage;
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -67,6 +70,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		context = this;
+		
+		localstorage = new localstorage_helper();
 		
         NavbarModel.LoadModel();
         BookshelfModel.LoadModel();
@@ -81,6 +87,7 @@ public class MainActivity extends Activity {
         navbarListView.setAdapter(adapter);
 
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
+        
         Log.d("Getting","Json");
         getJson();
 		
@@ -126,7 +133,7 @@ public class MainActivity extends Activity {
 				
 				
 				//Setja inn namePdf og correct! file size í isInLocal
-				boolean[] localCheckResult = isInLocal(namePdf,correctPdfSize);
+				boolean[] localCheckResult = localstorage.isInLocal(namePdf,correctPdfSize);
 				
 				if (localCheckResult[0] && localCheckResult[1]){
 						Log.d("Correct file exists","Cancelling download");
@@ -325,23 +332,15 @@ public class MainActivity extends Activity {
 		Log.d("Entering","UpdateView()");
 		int length = versionNames.length;
 		for (int i = length; i > 0; --i) {
-			boolean[] localResult = isInLocal(versionNames[i-1],versionsSizes[i-1]);
-			//Button delButton = (Button) findViewById(length-i+1000);
-			//Log.e("length-i+100 =", Integer.toString(length-i+1000));
-			//int hj= delButton.getId();
-			//Log.e("Button ID=",Integer.toString(hj));
+			boolean[] localResult = localstorage.isInLocal(versionNames[i-1],versionsSizes[i-1]);
 			BookshelfItem item = BookshelfModel.GetbyId(length-i);
 			if (localResult[0] && localResult[1]){
 				Log.d("This PDF is ready in local:",versionNames[i-1]);
-				//Change buttons and onclicklisteners
-				
+				//Change Model values
 				item.Buttontext = "Lesa";
-				item.Showdelete = true;
-				//delButton.setVisibility(View.VISIBLE);
-				
+				item.Showdelete = true;		
 			}
 			else{
-				//delButton.setVisibility(View.GONE);
 				item.Showdelete = false;
 			}
 		}
@@ -531,32 +530,6 @@ public void DeleteButtonClick(View v) {
     
 }
 
-
-
-//What it does:
-//Checks if filename is in local storage and if correct size (not a partial file)
-public boolean[] isInLocal(String filename, long filesize) {
-	 UpdatelocalFiles();
-	 
-	 boolean[] result = new boolean[2];
-	 result[0] = false;
-	 result[1] = false;
-	 
-     for (int i=0; i < localFiles.length; i++)
-     {
-         if (filename.equals(localFiles[i].getName())){
-        	 result[0] = true;
-        	 if (filesize == localFiles[i].length()){
-        		 result[1] = true;
-        	 }
-        	 
-         }
-     }
-
-     
-	return result;
-}
-
 //Assign pdf file sizes to array from latest to newest
 public void getFileSizes(){
 	
@@ -564,7 +537,6 @@ public void getFileSizes(){
 	versionNames = new String[versions.length()];
 	
 	class GetFileSizes extends AsyncTask <Void, Void, Void>{
-		private Context context;
 		
 		public GetFileSizes (){
 
@@ -604,10 +576,9 @@ public void getFileSizes(){
 	sizes.execute();
 }
 
-public void UpdatelocalFiles(){
-	localFiles = getFilesDir().listFiles();
-}
-	
 
+public static Context getAppContext() {
+    return context;
+}
 		    
 }
