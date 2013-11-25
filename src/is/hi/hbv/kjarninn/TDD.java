@@ -7,7 +7,7 @@ public class TDD {
 	  public void shouldDisplay2MinFor5Cents() {
 	    sharedprefs shpref  = new sharedprefs();
 	    assertEquals( "Should display 2 min for 5 cents", 
-	                  2, ps.readDisplay() ); 
+	                  2, shpref.getPrefInt("Lol",-1) ); 
 	  }
 }
 

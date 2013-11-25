@@ -8,6 +8,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -41,8 +42,20 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
                 if (bitmap != null) {
                     imageView.setImageBitmap(bitmap);
                 } else {
-                    imageView.setImageDrawable(imageView.getContext().getResources()
-                            .getDrawable(R.drawable.book2));
+                	try 
+                	{
+                	    // get input stream
+                	    InputStream ims = imageView.getContext().getAssets().open("book_icon.png");
+                	    // load image as Drawable
+                	    Drawable d = Drawable.createFromStream(ims, null);
+                	    // set image to ImageView
+                	    imageView.setImageDrawable(d);
+                	}
+                	catch(Exception ex) 
+                	{
+                	    return;
+                	}
+                    
                 }
             }
  

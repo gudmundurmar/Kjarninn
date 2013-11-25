@@ -26,6 +26,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -90,7 +92,7 @@ public class MainActivity extends Activity {
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
         
         Log.d("Getting","Json");
-
+        Log.d("isOnline:",Boolean.toString(isOnline()));
         getJson();
 		
     }
@@ -130,8 +132,6 @@ public class MainActivity extends Activity {
 						correctPdfSize = versionsSizes[j];
 					}
 				}
-				
-				Log.d("Start download checking current local size:",Long.toString(correctPdfSize));
 				
 				
 				//Setja inn namePdf og correct! file size í isInLocal
@@ -262,7 +262,7 @@ public class MainActivity extends Activity {
         catch (Exception e) 
         {
         	Log.e("Something went wrong!", "Error log below:");
-        	e.printStackTrace();
+        	
         }  
     }
 	
@@ -281,17 +281,24 @@ public class MainActivity extends Activity {
 
 			@Override
 			protected Void doInBackground(Void...as) {
-				try {
-					JSONObject json = getJson("http://kjarninn.com/json");
-					Log.d("test", "Finished fetching JSON: ");
-					
-					versions = json.getJSONArray("versions");
-					
-					return null;
+				if (isOnline()){
+					try {
+						JSONObject json = getJson("http://kjarninn.com/json");
+						Log.d("test", "Finished fetching JSON: ");
+						
+						versions = json.getJSONArray("versions");
+						
+						return null;
+					}
+					catch (Exception e) {
+						Log.e("Error in getJson","");
+						
+					}
 				}
-				catch (Exception e) {
-					e.printStackTrace();
+				else {
+					Log.e("Entering JsonFallback",".");
 					JsonFallback();
+					return null;
 				}
 				return null;
 			}
@@ -303,7 +310,6 @@ public class MainActivity extends Activity {
 		    		LoadBooks();
 		    	}
 		    	catch(Exception e) {
-					e.printStackTrace();
 		    	}
 		    }
 
@@ -333,7 +339,9 @@ public class MainActivity extends Activity {
 	//Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
 	private void UpdateView() {	
 		Log.d("Entering","UpdateView()");
-		Log.e("VersionNames",versionNames[3]);
+		Log.e("Radom tests","");
+		Log.e("VersionNames[3]",versionNames[3]);
+		Log.e("VersionSizes[3]",Integer.toString(versionsSizes[3]));
 		int length = versionNames.length;
 		for (int i = length; i > 0; --i) {
 			boolean[] localResult = localstorage.isInLocal(versionNames[i-1],versionsSizes[i-1]);
@@ -447,48 +455,53 @@ public class MainActivity extends Activity {
 
 
 public void selectBookshelfItem(int position) {
-	try {
-		JSONObject version = versions.getJSONObject(position);
-		Log.d("Selected Bookshelf Item", version.getString("pdfurl"));
-		
-		// this needs to be bound to a button instead of calling it here
-		//
-		//TODO
-		String urli = version.getString("pdfurl");
-		String nafn = version.getString("version")+"utg.pdf";
-		String[] downloads = new String[2];
-		
-		downloads[0] = urli;
-		downloads[1] = nafn;
-		final StartDownload download = new StartDownload(this);
-		
-		String download_nafn = version.getString("version")+". útgáfu";
-		// instantiate it within the onCreate method
-		mProgressDialog = new ProgressDialog(this);
-		mProgressDialog.setMessage("Sæki "+download_nafn);
-		mProgressDialog.setIndeterminate(true);
-		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		mProgressDialog.setCancelable(true);
-
-		mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-		    public void onCancel(DialogInterface dialog) {
-		        download.cancel(true);
-		    }
-		});	
-		
-		Log.d("Starting Download",nafn);
-		
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-		    download.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, downloads);
-		else
-		    download.execute(downloads);
-
-		
+	if (isOnline()){
+		try {
+			JSONObject version = versions.getJSONObject(position);
+			Log.d("Selected Bookshelf Item", version.getString("pdfurl"));
+			
+			// this needs to be bound to a button instead of calling it here
+			//
+			//TODO
+			String urli = version.getString("pdfurl");
+			String nafn = version.getString("version")+"utg.pdf";
+			String[] downloads = new String[2];
+			
+			downloads[0] = urli;
+			downloads[1] = nafn;
+			final StartDownload download = new StartDownload(this);
+			
+			String download_nafn = version.getString("version")+". útgáfu";
+			// instantiate it within the onCreate method
+			mProgressDialog = new ProgressDialog(this);
+			mProgressDialog.setMessage("Sæki "+download_nafn);
+			mProgressDialog.setIndeterminate(true);
+			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			mProgressDialog.setCancelable(true);
 	
-	} 
-	catch (JSONException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+			mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			    public void onCancel(DialogInterface dialog) {
+			        download.cancel(true);
+			    }
+			});	
+			
+			Log.d("Starting Download",nafn);
+			
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			    download.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, downloads);
+			else
+			    download.execute(downloads);
+	
+			
+		
+		} 
+		catch (JSONException e) {
+			// TODO Auto-generated catch block
+			Log.e("Error in getJson","");
+		}
+	}
+	else{
+		Toast.makeText(context,"Þú ert ekki nettengdur!", Toast.LENGTH_SHORT).show();
 	}
 }
 
@@ -515,15 +528,35 @@ public void BookshelfButtonClick(View v) {
 public void DeleteButtonClick(View v) {
     final int id = v.getId();
     Log.d("Delete Button click","id="+id);
+    
+    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            switch (which){
+            case DialogInterface.BUTTON_POSITIVE:
+                Log.d("Deleting...",versionNames[versionNames.length-id+1000-1]);
+            	File dir = getFilesDir();
+            	File file = new File(dir, versionNames[versionNames.length-id+1000-1]);
+            	localstorage.deleteFromLocal(file);
+            	BookshelfItem item = BookshelfModel.GetbyId(id-1000);
+            	item.Buttontext = "Sækja";
+            	UpdateView();
+                break;
 
-    Log.d("Deleting...",versionNames[versionNames.length-id+1000-1]);
-	File dir = getFilesDir();
-	File file = new File(dir, versionNames[versionNames.length-id+1000-1]);
-	localstorage.deleteFromLocal(file);
-	BookshelfItem item = BookshelfModel.GetbyId(id-1000);
-	item.Buttontext = "Sækja";
+            case DialogInterface.BUTTON_NEGATIVE:
+                //No button clicked
+                break;
+            }
+        }
+    };
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setMessage("Eyða valdri útgáfu?").setPositiveButton("Eyða", dialogClickListener)
+        .setNegativeButton("Hætta", dialogClickListener).show();
+
+
    
-    UpdateView();
+    
 
     
 }
@@ -542,24 +575,41 @@ public void getFileSizes(){
 	
 		@Override
 		protected Void doInBackground(Void...as) {
+			
 			for (int i=0; i < versions.length(); i++){
 				try{
-					JSONObject version = versions.getJSONObject(i);
-					String urlToPdf = version.getString("pdfurl");
-					HttpURLConnection connection = null;
-					URL url = new URL(urlToPdf);
-				    connection = (HttpURLConnection) url.openConnection();
-				    connection.connect();
-				    int file_size = connection.getContentLength();
-				    //Critical laga
-				    versionsSizes[i] = file_size;
-				    //Critical þarf að laga ef ekki nettenging
-				    versionNames[i] = version.getString("version")+"utg.pdf";
-				    
+				JSONObject version = versions.getJSONObject(i);
+				versionNames[i] = version.getString("version")+"utg.pdf";
 				}
-				catch (Exception e){
-					e.printStackTrace();
+				catch(Exception e){
+					
 				}
+			}
+			
+			if (isOnline()){
+				for (int i=0; i < versions.length(); i++){
+					try{	
+						sharedprefs shpref = new sharedprefs();
+						JSONObject version = versions.getJSONObject(i);
+						String urlToPdf = version.getString("pdfurl");
+						HttpURLConnection connection = null;
+						URL url = new URL(urlToPdf);
+					    connection = (HttpURLConnection) url.openConnection();
+					    connection.connect();
+					    int file_size = connection.getContentLength();
+					    shpref.setPrefInt(version.getString("version")+"utg",file_size);
+					    //Critical laga
+					    versionsSizes[i] = file_size;
+					    //Critical þarf að laga ef ekki nettenging   
+					}
+					catch (Exception e){
+						Log.e("Error in GetFileSizes","");
+					}
+				}
+			}
+			else{
+				Log.e("Entering sizesFallback",".");
+				sizesFallback();
 			}
 			return null;
 		}
@@ -603,11 +653,11 @@ public Void JsonFallback(){
 	try{
 		JSONObject json = new JSONObject(result);
 		versions = json.getJSONArray("versions");
-		Log.e("Loaded json backup","");
+		Log.e("Loaded json backup",".");
 		
 	}
 	catch (Exception e){
-		e.printStackTrace();
+		Log.e("Error in JsonFallback",".");
 	}
 	
 	
@@ -616,5 +666,32 @@ public Void JsonFallback(){
 	
 	return null;
 }
-		    
+
+public void sizesFallback(){
+	for (int i=0; i < versions.length(); i++){
+		try{
+			sharedprefs shpref = new sharedprefs();
+			JSONObject version = versions.getJSONObject(i);
+		    int file_size = shpref.getPrefInt(version.getString("version")+"utg",-1);
+		    versionsSizes[i] = file_size;  
+		}
+		catch (Exception e){
+			Log.e("Error in sizesFallback",".");
+			e.printStackTrace();
+		}
+	}
+}
+
+public boolean isOnline() {
+	    ConnectivityManager cm =
+	        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+	        return true;
+	    }
+	    return false;
+}
+
+
+
 }
