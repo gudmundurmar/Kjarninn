@@ -33,6 +33,15 @@ public class BookshelfModel {
         return null;
     }
     
+    public static String getVersion(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                return item.Version;
+            }
+        }
+        return null;
+    }
+    
     public static String getThumbUrl(int id){
         for(BookshelfItem item : Items) {
             if (item.Id == id) {

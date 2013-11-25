@@ -37,6 +37,7 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.Toast;
@@ -58,7 +59,7 @@ public class MainActivity extends Activity {
     public JSONArray versions;
     //versionSizes = array of pdf file sizes [1.utg.....nyjasta.utg]
     public int[] versionsSizes;
-    public String[] versionNames;
+    public static String[] versionNames;
     
     public File[] localFiles;
     public BookshelfAdapter bookshelfadapter;
@@ -228,7 +229,7 @@ public class MainActivity extends Activity {
 	        if (result != null)
 	            Toast.makeText(context,"Download error: "+result, Toast.LENGTH_LONG).show();
 	        else
-	            Toast.makeText(context,"File downloaded", Toast.LENGTH_SHORT).show();
+	            Toast.makeText(context,"Blað sótt", Toast.LENGTH_SHORT).show();
 	    }
 
 		   		
@@ -240,8 +241,8 @@ public class MainActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
         
+    	
         return true;
     }
     
@@ -251,6 +252,8 @@ public class MainActivity extends Activity {
 	public void OpenPDF(File filz) {
         try
         {
+        	sharedprefs shpref = new sharedprefs();
+        	shpref.setPrefString("lastopened", filz.getPath());
 	        Intent intent = new Intent(Intent.ACTION_VIEW);
 	        String uri = (Uri.fromFile(filz)).toString();
 	        Uri newUri = Uri.parse(uri);
@@ -325,7 +328,7 @@ public class MainActivity extends Activity {
 		int id = 0;	
 		for (int i = versions.length(); i > 0; --i) {
 			JSONObject version = versions.getJSONObject(i-1);
-			BookshelfModel.Items.add(new BookshelfItem(id, version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date"), "Sækja", false));
+			BookshelfModel.Items.add(new BookshelfItem(id,version.getString("version") ,version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date"), "Sækja", false));
 			id++;
 		}
 		bookshelfadapter = new BookshelfAdapter(this, BookshelfModel.Items);
@@ -430,24 +433,37 @@ public class MainActivity extends Activity {
 	private void selectNavbarItem(int position) {
 		switch(position) {
 			case 0:
-				Log.d("Navbar Click","Item 0");
-				//Intent a = new Intent(MainActivity.this, Activity1.class);
-		        //startActivity(a);
-		        break;
+				
+					Log.d("Navbar Click","Item 0");
+					sharedprefs shpref = new sharedprefs();
+		        	String last = shpref.getPrefString("lastopened","error");
+		        	if (last.equals("error")){
+		        		Toast.makeText(context,"Ekkert blað í lestri", Toast.LENGTH_SHORT).show();	
+		        	}
+		        	else{
+		        		File lastopened = new File(last);
+			        	OpenPDF(lastopened);	
+		        	}
+		        	break;
 			case 1:
 				Log.d("Navbar Click","Item 1");
-				//Intent a = new Intent(MainActivity.this, Activity1.class);
-		        //startActivity(a);
+				setContentView(R.layout.activity_main);
 		        break;
 		    case 2:
 		    	Log.d("Navbar Click","Item 2");
 		    	Intent browserIntent_viewHelp = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg"));
-				startActivity(browserIntent_viewHelp);
+		    	startActivity(browserIntent_viewHelp);
+				/*WebView webview = new WebView(this);
+				setContentView(webview);
+				webview.loadUrl("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg");*/
 		        break;
 			case 3:
 				Log.d("Navbar Click","Item 3");
 				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is"));
 				startActivity(browserIntent_toSite);
+				/*WebView webview2 = new WebView(this);
+				setContentView(webview2);
+				webview2.loadUrl("http://kjarninn.is");*/
 		        break;
 		    default:
 		}

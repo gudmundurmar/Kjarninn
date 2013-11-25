@@ -2,6 +2,7 @@ package is.hi.hbv.kjarninn;
 
 import java.util.ArrayList;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -69,9 +70,12 @@ public class BookshelfAdapter extends BaseAdapter {
         	holder.deleteButton.setVisibility(View.GONE);
         }
         
- 
+        String[] thumbnailparams = new String[2];
+        thumbnailparams[0] = BookshelfModel.getThumbUrl(position);
+        thumbnailparams[1] = BookshelfModel.getVersion(position);
+        
         if (holder.thumbnail != null) {
-            new ImageDownloaderTask(holder.thumbnail).execute(BookshelfModel.getThumbUrl(position));
+            new ImageDownloaderTask(holder.thumbnail).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,thumbnailparams);
         }
  
         return convertView;

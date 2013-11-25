@@ -1,14 +1,19 @@
 package is.hi.hbv.kjarninn;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
+
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -25,7 +30,21 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
     // Actual download method, run in the task thread
     protected Bitmap doInBackground(String... params) {
         // params comes from the execute() call: params[0] is the url.
-        return downloadBitmap(params[0]);
+    	localstorage_helper localstorage = new localstorage_helper();
+    	
+    	int version = Integer.parseInt(params[1]);
+    	String thumbName = "thumb"+Integer.toString(version)+".jpg";
+    	
+    	//String thumbName = "thumb"+params[1]+".jpg";
+    	if (localstorage.isInLocal(thumbName,1)[0]){
+    		File thumb = localstorage.getFile(thumbName);
+    		String path = thumb.getPath();
+    		//Log.d("Getting bitmap form path...", path);
+    		Bitmap bMap = BitmapFactory.decodeFile(path);
+    		return bMap;
+    	}
+    	
+        return downloadBitmap(params[0],params[1]);
     }
  
     @Override
@@ -62,7 +81,7 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         }
     }
     
-    static Bitmap downloadBitmap(String url) {
+    static Bitmap downloadBitmap(String url, String version) {
         final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         final HttpGet getRequest = new HttpGet(url);
         try {
@@ -80,6 +99,19 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
                 try {
                     inputStream = entity.getContent();
                     final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    
+                    try {
+                    	Context context = MainActivity.getAppContext();
+                    	String path = context.getFilesDir().getAbsolutePath()+"/thumb"+version+".jpg";
+                    	//Log.d("Saving file to path..",path);
+                    	FileOutputStream fos = context.openFileOutput("thumb"+version+".jpg", Context.MODE_PRIVATE);
+                    	File thumb = new File(path);
+                    	thumb.setReadable(true, false);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                        fos.close();
+                 } catch (Exception e) {
+                        e.printStackTrace();
+                 }
                     return bitmap;
                 } finally {
                     if (inputStream != null) {
