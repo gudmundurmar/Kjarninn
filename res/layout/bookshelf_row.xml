@@ -53,10 +53,13 @@
     
     <ProgressBar
         android:id="@+id/progressbar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_below="@id/headline"
+        android:layout_toRightOf="@id/thumbnail"
+        android:paddingLeft="10dp"
+        android:layout_marginTop="10dip"
+        android:layout_width="200dp"
+        android:layout_height="10dp"
         android:visibility="gone" />
     
     <Button 

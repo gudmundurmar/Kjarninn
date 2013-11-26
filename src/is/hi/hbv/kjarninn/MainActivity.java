@@ -21,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -98,7 +97,10 @@ public class MainActivity extends Activity {
         Log.d("Getting","Json");
         Log.d("isOnline:",Boolean.toString(isOnline()));
         getJson();
-		
+        
+		TDD tdd = new TDD();
+		tdd.testSharedPrefsInt();
+		tdd.testSharedPrefsString();
     }
 	
 
@@ -458,23 +460,18 @@ public class MainActivity extends Activity {
 		        	break;
 			case 1:
 				Log.d("Navbar Click","Item 1");
-				setContentView(R.layout.activity_main);
 		        break;
 		    case 2:
 		    	Log.d("Navbar Click","Item 2");
-		    	Intent browserIntent_viewHelp = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg"));
-		    	startActivity(browserIntent_viewHelp);
-				/*WebView webview = new WebView(this);
+				WebView webview = new WebView(this);
 				setContentView(webview);
-				webview.loadUrl("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg");*/
+				webview.loadUrl("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg");
 		        break;
 			case 3:
 				Log.d("Navbar Click","Item 3");
-				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is"));
-				startActivity(browserIntent_toSite);
-				/*WebView webview2 = new WebView(this);
+				WebView webview2 = new WebView(this);
 				setContentView(webview2);
-				webview2.loadUrl("http://kjarninn.is");*/
+				webview2.loadUrl("http://kjarninn.is/#pistlar");
 		        break;
 		    default:
 		}
@@ -602,7 +599,6 @@ public void getFileSizes(){
 	
 		@Override
 		protected Void doInBackground(Void...as) {
-			
 			for (int i=0; i < versions.length(); i++){
 				try{
 				JSONObject version = versions.getJSONObject(i);
@@ -612,11 +608,11 @@ public void getFileSizes(){
 					
 				}
 			}
-			
+			sharedprefs shpref = new sharedprefs();
 			if (isOnline()){
 				for (int i=0; i < versions.length(); i++){
-					try{	
-						sharedprefs shpref = new sharedprefs();
+					try{
+						
 						JSONObject version = versions.getJSONObject(i);
 						String urlToPdf = version.getString("pdfurl");
 						HttpURLConnection connection = null;
@@ -625,8 +621,8 @@ public void getFileSizes(){
 					    connection.connect();
 					    int file_size = connection.getContentLength();
 					    shpref.setPrefInt(version.getString("version")+"utg",file_size);
-					    //Critical laga
 					    versionsSizes[i] = file_size;
+					    
 					    //Critical þarf að laga ef ekki nettenging   
 					}
 					catch (Exception e){
