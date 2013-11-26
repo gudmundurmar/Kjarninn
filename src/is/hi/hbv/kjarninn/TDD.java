@@ -1,16 +1,14 @@
 package is.hi.hbv.kjarninn;
+import org.junit.*;
+import static org.junit.Assert.*;
 
-import android.test.AndroidTestCase;
-
-
-public class TDD extends AndroidTestCase{
-	
-	public void testPutKeyInt(){
-		sharedprefs shpref = new sharedprefs(this.getContext(),"testPref");
-		shpref.setPrefInt("testInt", 1337);
-		int result = shpref.getPrefInt("testInt", -1);
-	}
-	  
+public class TDD {
+	@Test
+	  public void shouldDisplay2MinFor5Cents() {
+	    sharedprefs shpref  = new sharedprefs();
+	    assertEquals( "Should display 2 min for 5 cents", 
+	                  2, shpref.getPrefInt("Lol",-1) ); 
+	  }
 }
 
 
