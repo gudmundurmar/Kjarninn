@@ -67,6 +67,7 @@ public class MainActivity extends Activity {
     public BookshelfAdapter bookshelfadapter;
     private static Context context;
     public static localstorage_helper localstorage;
+    private String prefName = "is.hi.hbv.kjarninn";
 	
 	/**
 	 * Responsible for making appropriate buttons depending on what 
@@ -98,6 +99,7 @@ public class MainActivity extends Activity {
         Log.d("Getting","Json");
         Log.d("isOnline:",Boolean.toString(isOnline()));
         getJson();
+        
 		
     }
 	
@@ -263,7 +265,7 @@ public class MainActivity extends Activity {
 	public void OpenPDF(File filz) {
         try
         {
-        	sharedprefs shpref = new sharedprefs();
+        	sharedprefs shpref = new sharedprefs(context,prefName);
         	shpref.setPrefString("lastopened", filz.getPath());
 	        Intent intent = new Intent(Intent.ACTION_VIEW);
 	        String uri = (Uri.fromFile(filz)).toString();
@@ -446,7 +448,7 @@ public class MainActivity extends Activity {
 			case 0:
 				
 					Log.d("Navbar Click","Item 0");
-					sharedprefs shpref = new sharedprefs();
+					sharedprefs shpref = new sharedprefs(context,prefName);
 		        	String last = shpref.getPrefString("lastopened","error");
 		        	if (last.equals("error")){
 		        		Toast.makeText(context,"Ekkert blað í lestri", Toast.LENGTH_SHORT).show();	
@@ -458,23 +460,18 @@ public class MainActivity extends Activity {
 		        	break;
 			case 1:
 				Log.d("Navbar Click","Item 1");
-				setContentView(R.layout.activity_main);
 		        break;
 		    case 2:
 		    	Log.d("Navbar Click","Item 2");
-		    	Intent browserIntent_viewHelp = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg"));
-		    	startActivity(browserIntent_viewHelp);
-				/*WebView webview = new WebView(this);
+				WebView webview = new WebView(this);
 				setContentView(webview);
-				webview.loadUrl("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg");*/
+				webview.loadUrl("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg");
 		        break;
 			case 3:
 				Log.d("Navbar Click","Item 3");
-				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is"));
-				startActivity(browserIntent_toSite);
-				/*WebView webview2 = new WebView(this);
+				WebView webview2 = new WebView(this);
 				setContentView(webview2);
-				webview2.loadUrl("http://kjarninn.is");*/
+				webview2.loadUrl("http://kjarninn.is/#pistlar");
 		        break;
 		    default:
 		}
@@ -616,7 +613,7 @@ public void getFileSizes(){
 			if (isOnline()){
 				for (int i=0; i < versions.length(); i++){
 					try{	
-						sharedprefs shpref = new sharedprefs();
+						sharedprefs shpref = new sharedprefs(context,prefName);
 						JSONObject version = versions.getJSONObject(i);
 						String urlToPdf = version.getString("pdfurl");
 						HttpURLConnection connection = null;
@@ -697,7 +694,7 @@ public Void JsonFallback(){
 public void sizesFallback(){
 	for (int i=0; i < versions.length(); i++){
 		try{
-			sharedprefs shpref = new sharedprefs();
+			sharedprefs shpref = new sharedprefs(context,prefName);
 			JSONObject version = versions.getJSONObject(i);
 		    int file_size = shpref.getPrefInt(version.getString("version")+"utg",-1);
 		    versionsSizes[i] = file_size;  

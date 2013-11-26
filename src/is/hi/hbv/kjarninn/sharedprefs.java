@@ -7,8 +7,14 @@ import android.content.SharedPreferences;
 
 public class sharedprefs {
 	
-	Context context = MainActivity.getAppContext();
-	SharedPreferences prefs = context.getSharedPreferences("is.hi.hbv.kjarninn", Context.MODE_PRIVATE);
+	private Context context;
+	private String prefName;
+	public sharedprefs(Context context, String prefname){
+		this.context = context;
+		prefName = prefname;
+	}
+	
+	SharedPreferences prefs = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
 	
 	//Get Shared preferences key value,ValueType: Integer
 	//defValue is return value if key doesn't exist
