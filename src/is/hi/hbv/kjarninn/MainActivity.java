@@ -34,8 +34,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -44,7 +46,7 @@ import android.widget.Toast;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
-	
+	 private DrawerLayout mDrawerLayout;
 	/**
 	 *  Handler for callbacks to the UI thread
 	 */
@@ -81,6 +83,7 @@ public class MainActivity extends Activity {
         NavbarModel.LoadModel();
         BookshelfModel.LoadModel();
         navbarListView = (ListView) findViewById(R.id.navbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         bookshelfListView = (ListView) findViewById(R.id.bookshelf);
         String[] ids = new String[NavbarModel.Items.size()];
         for (int i= 0; i < ids.length; i++){
@@ -241,10 +244,18 @@ public class MainActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        
-    	
+
+        getMenuInflater().inflate(R.menu.main, menu);//
+
         return true;
     }
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	mDrawerLayout.openDrawer(navbarListView);
+    	return true;
+    		
+    	
+    }
+    
     
     /**
      * Opens the filz pdf file in a PDF reader.
