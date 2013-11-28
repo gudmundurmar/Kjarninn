@@ -464,16 +464,14 @@ public class MainActivity extends Activity {
 		    case 2:
 		    	//Hjalp
 		    	Log.d("Navbar Click","Item 2");
-				WebView webview = new WebView(this);
-				setContentView(webview);
-				webview.loadUrl("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg");
+		    	Intent browserIntent_toOfninn = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kjarnaofninn"));
+				startActivity(browserIntent_toOfninn);
 		        break;
 			case 3:
 				//A vefnum
 				Log.d("Navbar Click","Item 3");
-				WebView webview2 = new WebView(this);
-				setContentView(webview2);
-				webview2.loadUrl("http://kjarninn.is/#pistlar");
+				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/#pistlar"));
+				startActivity(browserIntent_toSite);
 		        break;
 		    default:
 		}
