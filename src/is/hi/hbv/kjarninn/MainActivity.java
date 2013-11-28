@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 	/**
 	 *  Handler for callbacks to the UI thread
 	 */
-	final Handler mHandler = new Handler();
+	final Handler callbackHandler = new Handler();
 	
 	// declare the dialog as a member field of your activity
 	ProgressDialog mProgressDialog;
@@ -89,8 +89,8 @@ public class MainActivity extends Activity {
 
             ids[i] = Integer.toString(i+1);
         }
-        NavbarAdapter adapter = new NavbarAdapter(this,R.layout.navbar_row, ids);
-        navbarListView.setAdapter(adapter);
+        NavbarAdapter NavAdapter = new NavbarAdapter(this,R.layout.navbar_row, ids); 
+        navbarListView.setAdapter(NavAdapter); //
 
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
         
@@ -153,10 +153,10 @@ public class MainActivity extends Activity {
 				}
 				else{
 					String urlToPdf = savePdfAs[0];
-	                FileOutputStream fos = openFileOutput(namePdf, Context.MODE_PRIVATE);
-	                String path = getFilesDir().getAbsolutePath() + "/" + namePdf; // path to the root of internal memory.
-	                Log.d("Saving to path:",path);
-	                File f = new File(path);
+	                FileOutputStream fileOutputStream = openFileOutput(namePdf, Context.MODE_PRIVATE);//
+	                String pathRootInternalMemory = getFilesDir().getAbsolutePath() + "/" + namePdf; // path to the root of internal memory.
+	                Log.d("Saving to path:",pathRootInternalMemory);
+	                File f = new File(pathRootInternalMemory);
 	                f.setReadable(true, false);
 	                URL url = new URL(urlToPdf);
 	                connection = (HttpURLConnection) url.openConnection();
@@ -176,15 +176,20 @@ public class MainActivity extends Activity {
 	                byte[] buffer = new byte[1024];
 	                int read;
 	                long total = 0;
-	                while ((read = input.read(buffer)) != -1) {
+	                int percentageProcess;
+	                int startingOffset = 0;
+	                int EndOfFile = -1;
+	                while ((read = input.read(buffer)) != EndOfFile) {
 	                	if (isCancelled())
 	                        return null;
 	                    total += read;
-	                    if (file_size > 0) // only if total length is known
-	                        publishProgress((int) (total * 100 / file_size));
-	                	fos.write(buffer, 0, read);
+	                    if (file_size > 0) {// only if total length is known
+	                        percentageProcess = (int) (total * 100 / file_size);
+	                    	publishProgress(percentageProcess);
+	                    }
+	                	fileOutputStream.write(buffer, startingOffset, read);
 	                }
-	                fos.close();
+	                fileOutputStream.close();
 	                input.close();
 				}
                 
@@ -341,7 +346,9 @@ public class MainActivity extends Activity {
 		int id = 0;	
 		for (int i = versions.length(); i > 0; --i) {
 			JSONObject version = versions.getJSONObject(i-1);
-			BookshelfModel.Items.add(new BookshelfItem(id,version.getString("version") ,version.getString("imageurl"), version.getString("name"), version.getString("headline"), version.getString("date"), "Sækja", false));
+			BookshelfModel.Items.add(new BookshelfItem(id,version.getString("version"), 
+					version.getString("imageurl"), version.getString("name"), 
+					version.getString("headline"), version.getString("date"), "Sækja", false));
 			id++;
 		}
 		bookshelfadapter = new BookshelfAdapter(this, BookshelfModel.Items);
@@ -358,12 +365,13 @@ public class MainActivity extends Activity {
 		Log.e("Radom tests","");
 		Log.e("VersionNames[3]",versionNames[3]);
 		Log.e("VersionSizes[3]",Integer.toString(versionsSizes[3]));
-		int length = versionNames.length;
-		for (int i = length; i > 0; --i) {
-			boolean[] localResult = localstorage.isInLocal(versionNames[i-1],versionsSizes[i-1]);
-			BookshelfItem item = BookshelfModel.GetbyId(length-i);
+		int downCounter = versionNames.length;
+		for (int upCounter = 0; upCounter < versionNames.length; ++upCounter) {
+			--downCounter;
+			boolean[] localResult = localstorage.isInLocal(versionNames[downCounter],versionsSizes[downCounter]);//down
+			BookshelfItem item = BookshelfModel.GetbyId(upCounter);//up
 			if (localResult[0] && localResult[1]){
-				Log.d("This PDF is ready in local:",versionNames[i-1]);
+				Log.d("This PDF is ready in local:",versionNames[downCounter]);//down
 				//Change Model values
 				item.Buttontext = "Lesa";
 				item.Showdelete = true;		
@@ -395,8 +403,8 @@ public class MainActivity extends Activity {
 			HttpClient httpclient = new DefaultHttpClient(); // for port 80 requests!
 			HttpGet httppost = new HttpGet(url);
 			HttpResponse response = httpclient.execute(httppost);
-			HttpEntity entity = response.getEntity();
-			is = entity.getContent();
+			HttpEntity httpEntity = response.getEntity();
+			is = httpEntity.getContent();
 			Log.d("test", "JSON loaded");
 		} catch(Exception e) {
 			Log.d("test", "Error loading JSON");
@@ -408,7 +416,8 @@ public class MainActivity extends Activity {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is,"utf-8"),8);
 			StringBuilder sb = new StringBuilder();
 			String line = null;
-			while ((line = reader.readLine()) != null) {
+			Object EndOfFile = null;
+			while ((line = reader.readLine()) != EndOfFile) {
 				sb.append(line + "\n");
 			}
 			is.close();
@@ -446,28 +455,31 @@ public class MainActivity extends Activity {
 	private void selectNavbarItem(int position) {
 		switch(position) {
 			case 0:
-				
-					Log.d("Navbar Click","Item 0");
-					sharedprefs shpref = new sharedprefs();
-		        	String last = shpref.getPrefString("lastopened","error");
-		        	if (last.equals("error")){
-		        		Toast.makeText(context,"Ekkert blað í lestri", Toast.LENGTH_SHORT).show();	
-		        	}
-		        	else{
-		        		File lastopened = new File(last);
-			        	OpenPDF(lastopened);	
-		        	}
-		        	break;
+				//I lestri
+				Log.d("Navbar Click","Item 0");
+				sharedprefs shpref = new sharedprefs();
+	        	String last = shpref.getPrefString("lastopened","error");
+	        	if (last.equals("error")){
+	        		Toast.makeText(context,"Ekkert blað í lestri", Toast.LENGTH_SHORT).show();	
+	        	}
+	        	else{
+	        		File lastopened = new File(last);
+		        	OpenPDF(lastopened);	
+	        	}
+	        	break;
 			case 1:
+				//Bladahilla
 				Log.d("Navbar Click","Item 1");
 		        break;
 		    case 2:
+		    	//Hjalp
 		    	Log.d("Navbar Click","Item 2");
 				WebView webview = new WebView(this);
 				setContentView(webview);
 				webview.loadUrl("http://kjarninn.is/kerfi/wp-content/uploads/2013/08/hjalp-kjarninn.jpg");
 		        break;
 			case 3:
+				//A vefnum
 				Log.d("Navbar Click","Item 3");
 				WebView webview2 = new WebView(this);
 				setContentView(webview2);
