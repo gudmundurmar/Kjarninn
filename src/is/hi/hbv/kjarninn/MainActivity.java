@@ -10,6 +10,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import junit.framework.Assert;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -97,10 +100,15 @@ public class MainActivity extends Activity {
         Log.d("isOnline:",Boolean.toString(isOnline()));
         getJson();
         
+        //Tests
 		TDD tdd = new TDD();
 		tdd.testSharedPrefsInt();
 		tdd.testSharedPrefsString();
+		
+		//Asserting if versions is not null
+		Assert.assertNotNull(versions);
     }
+
 	
 
     public class StartDownload extends AsyncTask <String, Integer, String>{
