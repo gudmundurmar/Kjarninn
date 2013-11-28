@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -337,9 +336,7 @@ public class MainActivity extends Activity {
 
 		}
 		final GetJSON json = new GetJSON(this);
-		json.execute();
-
-		
+		json.execute();	
 	}
 	
 	private void LoadBooks() throws JSONException {
@@ -357,8 +354,6 @@ public class MainActivity extends Activity {
 	}
 	
 
-	
-	
 	//Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
 	private void UpdateView() {	
 		Log.d("Entering","UpdateView()");
@@ -384,11 +379,6 @@ public class MainActivity extends Activity {
 		bookshelfadapter.notifyDataSetChanged();
 		
 	}
-
-	
-	
-	
-	
 	
 	// Fetches JSON from URL and returns object:
 	public static JSONObject getJson(String url){
@@ -490,243 +480,235 @@ public class MainActivity extends Activity {
 	}
 
 
-public void selectBookshelfItem(int position) {
-	if (isOnline()){
-		try {
-			JSONObject version = versions.getJSONObject(position);
-			Log.d("Selected Bookshelf Item", version.getString("pdfurl"));
-			
-			// this needs to be bound to a button instead of calling it here
-			//
-			//TODO
-			String urli = version.getString("pdfurl");
-			String nafn = version.getString("version")+"utg.pdf";
-			String[] downloads = new String[2];
-			
-			downloads[0] = urli;
-			downloads[1] = nafn;
-			final StartDownload download = new StartDownload(this);
-			
-			String download_nafn = version.getString("version")+". útgáfu";
-			// instantiate it within the onCreate method
-			mProgressDialog = new ProgressDialog(this);
-			mProgressDialog.setMessage("Sæki "+download_nafn);
-			mProgressDialog.setIndeterminate(true);
-			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-			mProgressDialog.setCancelable(true);
-	
-			mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-			    public void onCancel(DialogInterface dialog) {
-			        download.cancel(true);
-			    }
-			});	
-			
-			Log.d("Starting Download",nafn);
-			
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-			    download.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, downloads);
-			else
-			    download.execute(downloads);
-	
-			
+	public void selectBookshelfItem(int position) {
+		if (isOnline()){
+			try {
+				JSONObject version = versions.getJSONObject(position);
+				Log.d("Selected Bookshelf Item", version.getString("pdfurl"));
+				
+				// this needs to be bound to a button instead of calling it here
+				//
+				//TODO
+				String urli = version.getString("pdfurl");
+				String nafn = version.getString("version")+"utg.pdf";
+				String[] downloads = new String[2];
+				
+				downloads[0] = urli;
+				downloads[1] = nafn;
+				final StartDownload download = new StartDownload(this);
+				
+				String download_nafn = version.getString("version")+". útgáfu";
+				// instantiate it within the onCreate method
+				mProgressDialog = new ProgressDialog(this);
+				mProgressDialog.setMessage("Sæki "+download_nafn);
+				mProgressDialog.setIndeterminate(true);
+				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+				mProgressDialog.setCancelable(true);
 		
-		} 
-		catch (JSONException e) {
-			// TODO Auto-generated catch block
-			Log.e("Error in getJson","");
-		}
-	}
-	else{
-		Toast.makeText(context,"Þú ert ekki nettengdur!", Toast.LENGTH_SHORT).show();
-	}
-}
-
-public void BookshelfButtonClick(View v) {
-    int id = v.getId();
-    Log.d("ListView Button click","id="+id);
-    Button button = (Button) v.findViewById(id);
-    String buttontext = button.getText().toString();
-    String selectedFilename = versionNames[versionNames.length-id-1];
-    
-    if ( buttontext.equals("Lesa")){
-    	File file = localstorage.getFile(selectedFilename);
-    	OpenPDF(file);
-    }
-    else{
-	    //-1 síðasta útgáfan er fyrst í adapternum finnum rétta útgáfu
-	    int r = versions.length()-id-1;
-	    selectBookshelfItem(r);
-    }
-    
-}
-
-
-public void DeleteButtonClick(View v) {
-    final int id = v.getId();
-    Log.d("Delete Button click","id="+id);
-    
-    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            switch (which){
-            case DialogInterface.BUTTON_POSITIVE:
-                Log.d("Deleting...",versionNames[versionNames.length-id+1000-1]);
-            	File dir = getFilesDir();
-            	File file = new File(dir, versionNames[versionNames.length-id+1000-1]);
-            	localstorage.deleteFromLocal(file);
-            	BookshelfItem item = BookshelfModel.GetbyId(id-1000);
-            	item.Buttontext = "Sækja";
-            	UpdateView();
-                break;
-
-            case DialogInterface.BUTTON_NEGATIVE:
-                //No button clicked
-                break;
-            }
-        }
-    };
-
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setMessage("Eyða valdri útgáfu?").setPositiveButton("Eyða", dialogClickListener)
-        .setNegativeButton("Hætta", dialogClickListener).show();
-
-
-   
-    
-
-    
-}
-
-//Assign pdf file sizes to array from latest to newest
-public void getFileSizes(){
-	
-	versionsSizes = new int[versions.length()];
-	versionNames = new String[versions.length()];
-	
-	class GetFileSizes extends AsyncTask <Void, Void, Void>{
-		
-		public GetFileSizes (){
-
-		}
-	
-		@Override
-		protected Void doInBackground(Void...as) {
-			for (int i=0; i < versions.length(); i++){
-				try{
-				JSONObject version = versions.getJSONObject(i);
-				versionNames[i] = version.getString("version")+"utg.pdf";
-				}
-				catch(Exception e){
-					
-				}
+				mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+				    public void onCancel(DialogInterface dialog) {
+				        download.cancel(true);
+				    }
+				});	
+				
+				Log.d("Starting Download",nafn);
+				
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+				    download.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, downloads);
+				else
+				    download.execute(downloads);
+			} 
+			catch (JSONException e) {
+				// TODO Auto-generated catch block
+				Log.e("Error in getJson","");
 			}
-			sharedprefs shpref = new sharedprefs();
-			if (isOnline()){
+		}
+		else{
+			Toast.makeText(context,"Þú ert ekki nettengdur!", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	public void BookshelfButtonClick(View v) {
+	    int id = v.getId();
+	    Log.d("ListView Button click","id="+id);
+	    Button button = (Button) v.findViewById(id);
+	    String buttontext = button.getText().toString();
+	    int lastpos = versionNames.length-1;
+	    int fileposition = lastpos-id;
+	    String selectedFilename = versionNames[fileposition];
+	    
+	    if ( buttontext.equals("Lesa")){
+	    	File file = localstorage.getFile(selectedFilename);
+	    	OpenPDF(file);
+	    }
+	    else{
+		    //-1 síðasta útgáfan er fyrst í adapternum finnum rétta útgáfu
+		    selectBookshelfItem(fileposition);
+	    }
+	    
+	}
+	
+	
+	public void DeleteButtonClick(View v) {
+	    final int id = v.getId();
+	    Log.d("Delete Button click","id="+id);
+	    
+	    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+	        @Override
+	        public void onClick(DialogInterface dialog, int which) {
+	            switch (which){
+	            case DialogInterface.BUTTON_POSITIVE:
+	            	//delete buttons have an id a 1000 higher than the read buttons
+	            	//delta => difference in index between read and delete buttons
+	            	int delta = 1000;
+	            	int deleteButtonsLastPosition = (versionNames.length-1)+delta;
+	            	int deleteButtonChosenPosition = deleteButtonsLastPosition-id;
+	                Log.d("Deleting...",versionNames[deleteButtonChosenPosition]);
+	            	File dir = getFilesDir();
+	            	File file = new File(dir, versionNames[deleteButtonChosenPosition]);
+	            	localstorage.deleteFromLocal(file);
+	            	
+	            	//When the file (paper) has been deleted, change the read (lesa) button to get (sækja)
+	            	int ReadFilePos = id-delta;
+	            	BookshelfItem item = BookshelfModel.GetbyId(ReadFilePos);
+	            	item.Buttontext = "Sækja";
+	            	UpdateView();
+	                break;
+	
+	            case DialogInterface.BUTTON_NEGATIVE:
+	                //No button clicked
+	                break;
+	            }
+	        }
+	    };
+	
+	    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	    builder.setMessage("Eyða valdri útgáfu?").setPositiveButton("Eyða", dialogClickListener)
+	        .setNegativeButton("Hætta", dialogClickListener).show();  
+	}
+	
+	//Assign pdf file sizes to array from latest to newest
+	public void getFileSizes(){
+		
+		versionsSizes = new int[versions.length()];
+		versionNames = new String[versions.length()];
+		
+		class GetFileSizes extends AsyncTask <Void, Void, Void>{
+			
+			public GetFileSizes (){
+	
+			}
+		
+			@Override
+			protected Void doInBackground(Void...as) {
 				for (int i=0; i < versions.length(); i++){
 					try{
-						
-						JSONObject version = versions.getJSONObject(i);
-						String urlToPdf = version.getString("pdfurl");
-						HttpURLConnection connection = null;
-						URL url = new URL(urlToPdf);
-					    connection = (HttpURLConnection) url.openConnection();
-					    connection.connect();
-					    int file_size = connection.getContentLength();
-					    shpref.setPrefInt(version.getString("version")+"utg",file_size);
-					    versionsSizes[i] = file_size;
-					    
-					    //Critical þarf að laga ef ekki nettenging   
+					JSONObject version = versions.getJSONObject(i);
+					versionNames[i] = version.getString("version")+"utg.pdf";
 					}
-					catch (Exception e){
-						Log.e("Error in GetFileSizes","");
+					catch(Exception e){
+						
 					}
 				}
+				sharedprefs shpref = new sharedprefs();
+				if (isOnline()){
+					for (int i=0; i < versions.length(); i++){
+						try{
+							
+							JSONObject version = versions.getJSONObject(i);
+							String urlToPdf = version.getString("pdfurl");
+							HttpURLConnection connection = null;
+							URL url = new URL(urlToPdf);
+						    connection = (HttpURLConnection) url.openConnection();
+						    connection.connect();
+						    int file_size = connection.getContentLength();
+						    shpref.setPrefInt(version.getString("version")+"utg",file_size);
+						    versionsSizes[i] = file_size;
+						    
+						    //Critical þarf að laga ef ekki nettenging   
+						}
+						catch (Exception e){
+							Log.e("Error in GetFileSizes","");
+						}
+					}
+				}
+				else{
+					Log.e("Entering sizesFallback",".");
+					sizesFallback();
+				}
+				return null;
 			}
-			else{
-				Log.e("Entering sizesFallback",".");
-				sizesFallback();
-			}
-			return null;
+			
+		    @Override
+		    protected void onPostExecute(Void v) {
+		    	
+		    	UpdateView();
+		    }
+		    
+		    
+		}	
+		final GetFileSizes sizes = new GetFileSizes();
+		sizes.execute();
+	}
+	
+	
+	public static Context getAppContext() {
+	    return context;
+	}
+	
+	public Void JsonFallback(){
+		File jsonData = localstorage.getFile("data.json");
+		StringBuilder text = new StringBuilder();
+		BufferedReader br = null;
+	
+		try {
+		    br = new BufferedReader(new FileReader(jsonData));
+		    String line;
+	
+		    while ((line = br.readLine()) != null) {
+		        text.append(line);
+		        text.append('\n');
+		    }
+		} catch (IOException e) {
+		    // do exception handling
+		} finally {
+		    try { br.close(); } catch (Exception e) { }
 		}
-		
-	    @Override
-	    protected void onPostExecute(Void v) {
-	    	
-	    	UpdateView();
-	    }
-	    
-	    
-	}	
-	final GetFileSizes sizes = new GetFileSizes();
-	sizes.execute();
-}
-
-
-public static Context getAppContext() {
-    return context;
-}
-
-public Void JsonFallback(){
-	File jsonData = localstorage.getFile("data.json");
-	StringBuilder text = new StringBuilder();
-	BufferedReader br = null;
-
-	try {
-	    br = new BufferedReader(new FileReader(jsonData));
-	    String line;
-
-	    while ((line = br.readLine()) != null) {
-	        text.append(line);
-	        text.append('\n');
-	    }
-	} catch (IOException e) {
-	    // do exception handling
-	} finally {
-	    try { br.close(); } catch (Exception e) { }
-	}
-	String result = text.toString();
-	try{
-		JSONObject json = new JSONObject(result);
-		versions = json.getJSONArray("versions");
-		Log.e("Loaded json backup",".");
-		
-	}
-	catch (Exception e){
-		Log.e("Error in JsonFallback",".");
-	}
-	
-	
-	
-	
-	
-	return null;
-}
-
-public void sizesFallback(){
-	for (int i=0; i < versions.length(); i++){
+		String result = text.toString();
 		try{
-			sharedprefs shpref = new sharedprefs();
-			JSONObject version = versions.getJSONObject(i);
-		    int file_size = shpref.getPrefInt(version.getString("version")+"utg",-1);
-		    versionsSizes[i] = file_size;  
+			JSONObject json = new JSONObject(result);
+			versions = json.getJSONArray("versions");
+			Log.e("Loaded json backup",".");
+			
 		}
 		catch (Exception e){
-			Log.e("Error in sizesFallback",".");
-			e.printStackTrace();
+			Log.e("Error in JsonFallback",".");
+		}
+		return null;
+	}
+	
+	public void sizesFallback(){
+		for (int i=0; i < versions.length(); i++){
+			try{
+				sharedprefs shpref = new sharedprefs();
+				JSONObject version = versions.getJSONObject(i);
+			    int file_size = shpref.getPrefInt(version.getString("version")+"utg",-1);
+			    versionsSizes[i] = file_size;  
+			}
+			catch (Exception e){
+				Log.e("Error in sizesFallback",".");
+				e.printStackTrace();
+			}
 		}
 	}
-}
-
-public boolean isOnline() {
-	    ConnectivityManager cm =
-	        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
-	    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-	        return true;
-	    }
-	    return false;
-}
-
-
-
+	
+	public boolean isOnline() {
+		    ConnectivityManager cm =
+		        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		    if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+		        return true;
+		    }
+		    return false;
+	}
 }
