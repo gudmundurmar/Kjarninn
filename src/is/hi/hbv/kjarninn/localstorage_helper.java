@@ -56,7 +56,7 @@ public class localstorage_helper {
 		return deleted;
 	}
 	
-	//working?
+	
 	public void writeToFile(String data, String filename) {
 		Context context = MainActivity.getAppContext();
 		try{
