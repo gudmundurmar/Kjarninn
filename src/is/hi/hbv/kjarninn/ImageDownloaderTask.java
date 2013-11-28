@@ -35,8 +35,8 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
     	int version = Integer.parseInt(params[1]);
     	String thumbName = "thumb"+Integer.toString(version)+".jpg";
     	
-    	//String thumbName = "thumb"+params[1]+".jpg";
-    	if (localstorage.isInLocal(thumbName,1)[0]){
+    	boolean isFileNameInLocalstorage = localstorage.isInLocal(thumbName,1)[0];
+    	if (isFileNameInLocalstorage){
     		File thumb = localstorage.getFile(thumbName);
     		String path = thumb.getPath();
     		//Log.d("Getting bitmap form path...", path);
@@ -44,7 +44,9 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
     		return bMap;
     	}
     	
-        return downloadBitmap(params[0],params[1]);
+    	String url = params[0];
+    	String version_number = params[1];
+        return downloadBitmap(url,version_number);
     }
  
     @Override
