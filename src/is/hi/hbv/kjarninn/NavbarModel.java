@@ -9,10 +9,10 @@ public class NavbarModel {
     public static void LoadModel() {
 
         Items = new ArrayList<NavbarItem>();
-        Items.add(new NavbarItem(1, "book2.png", "Í lestri"));
-        Items.add(new NavbarItem(2, "bookshelf.png", "Blaðahilla"));
-        Items.add(new NavbarItem(3, "wat.png", "Hjálp"));
-        Items.add(new NavbarItem(4, "widi.png", "Á vefnum"));
+        Items.add(new NavbarItem(1, "book_icon.png", "Í lestri"));
+        Items.add(new NavbarItem(2, "bookshelf_icon.png", "Blaðahilla"));
+        Items.add(new NavbarItem(3, "play_icon.png", "Kjarnaofninn"));
+        Items.add(new NavbarItem(4, "pistlar_icon.png", "Pistlar"));
 
     }
 

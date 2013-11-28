@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Kjarninn</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Valmynd</string>
     <string name="hello_world">Veldu blað til að lesa</string>
     
     <string-array name="navbar_items">
