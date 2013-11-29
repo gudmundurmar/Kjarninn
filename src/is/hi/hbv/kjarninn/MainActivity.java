@@ -106,7 +106,7 @@ public class MainActivity extends Activity {
 		tdd.testSharedPrefsString();
 		
 		//Asserting if versions is not null
-		Assert.assertNotNull(versions);
+		//Assert.assertNotNull(versions);
     }
 
 	
@@ -323,6 +323,7 @@ public class MainActivity extends Activity {
 						Log.d("test", "Finished fetching JSON: ");
 						
 						versions = json.getJSONArray("versions");
+						Assert.assertNotNull(versions);
 						
 						return null;
 					}

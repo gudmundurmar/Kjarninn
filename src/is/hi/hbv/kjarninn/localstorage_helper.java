@@ -12,12 +12,10 @@ import android.util.Log;
 
 public class localstorage_helper {
 	
-	/**
-	 * Checks if filename is in local storage and if correct size (not a partial file)
-	 * @param filename
-	 * @param filesize
-	 * @return
-	 */
+	
+	
+	//What it does:
+	//Checks if filename is in local storage and if correct size (not a partial file)
 	public boolean[] isInLocal(String filename, long filesize) {
 		
 		Context context = MainActivity.getAppContext();
