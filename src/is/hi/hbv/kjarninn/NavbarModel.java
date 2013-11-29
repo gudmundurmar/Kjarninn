@@ -2,10 +2,16 @@ package is.hi.hbv.kjarninn;
 
 import java.util.ArrayList;
 
+/**
+ * holds the model of the navbar
+ */
 public class NavbarModel {
 
     public static ArrayList<NavbarItem> Items;
 
+    /**
+     * loads the model
+     */
     public static void LoadModel() {
 
         Items = new ArrayList<NavbarItem>();
@@ -16,6 +22,9 @@ public class NavbarModel {
 
     }
 
+    /**
+     * returns item by id
+     */
     public static NavbarItem GetbyId(int id){
 
         for(NavbarItem item : Items) {

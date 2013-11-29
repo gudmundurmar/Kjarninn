@@ -12,12 +12,21 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * adapter for the menu extends array adapter
+ */
 public class NavbarAdapter extends ArrayAdapter<String> {
 
     private final Context context;
     private final String[] Ids;
     private final int rowResourceId;
 
+    /**
+     * Constructor
+     * @param context
+     * @param textViewResourceId
+     * @param objects
+     */
     public NavbarAdapter(Context context, int textViewResourceId, String[] objects) {
 
         super(context, textViewResourceId, objects);
@@ -28,6 +37,9 @@ public class NavbarAdapter extends ArrayAdapter<String> {
 
     }
 
+    /**
+     * fetches xml layout and insterts values
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 

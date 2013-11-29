@@ -18,16 +18,24 @@ import android.net.http.AndroidHttpClient;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
- 
+
+/**
+ * For downloading images asyncronously
+ */
 class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
     private final WeakReference imageViewReference;
  
+    /**
+     * Create new imageView Reference
+     */
     public ImageDownloaderTask(ImageView imageView) {
         imageViewReference = new WeakReference(imageView);
     }
  
+    /**
+     * Actual download method, run in the task thread
+     */
     @Override
-    // Actual download method, run in the task thread
     protected Bitmap doInBackground(String... params) {
         // params comes from the execute() call: params[0] is the url.
     	localstorage_helper localstorage = new localstorage_helper();
@@ -49,8 +57,10 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         return downloadBitmap(url,version_number);
     }
  
+    /**
+     * Once the image is downloaded, associates it to the imageView
+     */
     @Override
-    // Once the image is downloaded, associates it to the imageView
     protected void onPostExecute(Bitmap bitmap) {
         if (isCancelled()) {
             bitmap = null;
@@ -83,6 +93,9 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         }
     }
     
+    /**
+     * download frontpage images
+     */
     static Bitmap downloadBitmap(String url, String version) {
         final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
         final HttpGet getRequest = new HttpGet(url);

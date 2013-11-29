@@ -10,8 +10,14 @@ public class sharedprefs {
 	Context context = MainActivity.getAppContext();
 	SharedPreferences prefs = context.getSharedPreferences("is.hi.hbv.kjarninn", Context.MODE_PRIVATE);
 	
-	//Get Shared preferences key value,ValueType: Integer
-	//defValue is return value if key doesn't exist
+	/**
+	 * Get Shared preferences key value,ValueType: Integer
+	 * defValue is return value if key doesn't exist
+	 * 
+	 * @param key
+	 * @param defValue
+	 * @return
+	 */
 	public int getPrefInt(String key, Integer defValue){
 		int result = prefs.getInt(key, defValue);	
 		return result;
@@ -22,13 +28,24 @@ public class sharedprefs {
 		prefs.edit().putInt(key, value).commit();
 	}
 	
-	//Set key value pair as shared preferences,ValueType: String
+	/**
+	 * Set key value pair as shared preferences,ValueType: String
+	 * 
+	 * @param key
+	 * @param value
+	 */
 	public void setPrefString(String key, String value){
 		prefs.edit().putString(key, value).commit();
 	}
 	
-	//Get Shared preferences key value,ValueType: String
-	//defValue is return value if key doesn't exist
+	/**
+	 * Get Shared preferences key value,ValueType: String
+	 * defValue is return value if key doesn't exist
+	 * 
+	 * @param key
+	 * @param defValue
+	 * @return
+	 */
 	public String getPrefString(String key, String defValue){
 		String result = prefs.getString(key, defValue);	
 		return result;
