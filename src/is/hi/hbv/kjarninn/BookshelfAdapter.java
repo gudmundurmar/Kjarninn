@@ -12,7 +12,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
- 
+
+/**
+ * extended baseAdapter for bookshelf
+ */
 public class BookshelfAdapter extends BaseAdapter {
 
 	private ArrayList listData;
@@ -23,22 +26,34 @@ public class BookshelfAdapter extends BaseAdapter {
         this.listData = listData;
         layoutInflater = LayoutInflater.from(context);
     }
- 
+    
+    /**
+     * get number of things in the adapter
+     */
     @Override
     public int getCount() {
         return listData.size();
     }
  
+    /**
+     * get item from adapter by position
+     */
     @Override
     public Object getItem(int position) {
         return listData.get(position);
     }
  
+    /**
+     * get item id from adapter by position
+     */
     @Override
     public long getItemId(int position) {
         return position;
     }
  
+    /**
+     * fetches the bookshelf layout and fills in the information
+     */
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
@@ -81,6 +96,9 @@ public class BookshelfAdapter extends BaseAdapter {
         return convertView;
     }
  
+    /**
+     * info holder
+     */
     static class ViewHolder {
         TextView title;
         TextView headline;

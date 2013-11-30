@@ -107,7 +107,9 @@ public class MainActivity extends Activity {
     }
 
 	
-
+	/**
+	* Class for handling asyncronous downloading.
+	*/
     public class StartDownload extends AsyncTask <String, Integer, String>{
 		private Context context;
 		
@@ -228,6 +230,9 @@ public class MainActivity extends Activity {
 	    }
 
 	    @Override
+	    /**
+	    * Updates the progress bar
+	    */
 	    protected void onProgressUpdate(Integer... progress) {
 	        super.onProgressUpdate(progress);
 	        // if we get here, length is known, now set indeterminate to false
@@ -237,6 +242,9 @@ public class MainActivity extends Activity {
 	    }
 
 	    @Override
+	    /**
+	    * When download is complete
+	    */
 	    protected void onPostExecute(String result) {
 	        mProgressDialog.dismiss();
 	        UpdateView();
@@ -271,7 +279,7 @@ public class MainActivity extends Activity {
     
     
     /**
-     * Opens the filz pdf file in a PDF reader.
+     * Opens the files pdf file in a PDF reader.
      */
 	public void OpenPDF(File filz) {
         try
@@ -314,6 +322,7 @@ public class MainActivity extends Activity {
 						Log.d("test", "Finished fetching JSON: ");
 						
 						versions = json.getJSONArray("versions");
+						Assert.assertNotNull(versions);
 						
 						return null;
 					}
@@ -345,7 +354,9 @@ public class MainActivity extends Activity {
 		final GetJSON json = new GetJSON(this);
 		json.execute();	
 	}
-	
+	/**
+	* Load books into bookshelf
+	*/
 	private void LoadBooks() throws JSONException {
 		int id = 0;	
 		for (int i = versions.length(); i > 0; --i) {
@@ -361,7 +372,9 @@ public class MainActivity extends Activity {
 	}
 	
 
-	//Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
+	/*
+	 * Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
+	 */
 	private void UpdateView() {	
 		Log.d("Entering","UpdateView()");
 		Log.e("Radom tests","");
@@ -387,7 +400,9 @@ public class MainActivity extends Activity {
 		
 	}
 	
-	// Fetches JSON from URL and returns object:
+	/*
+	 *  Fetches JSON from URL and returns object:
+	 */
 	public static JSONObject getJson(String url){
 
 		Log.d("test", "Starting to get JSON");
@@ -439,7 +454,9 @@ public class MainActivity extends Activity {
 		return jsonObject;
 
 	}
-	
+	/**
+	* Selects the menu item that was clicked
+	*/
 	private class DrawerItemClickListener implements ListView.OnItemClickListener {
 			@Override
 		    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -448,7 +465,9 @@ public class MainActivity extends Activity {
 		    }
 	}
 
-
+	/**
+	* Selects navbar item
+	*/
 	private void selectNavbarItem(int position) {
 		switch(position) {
 			case 0:
@@ -486,7 +505,9 @@ public class MainActivity extends Activity {
 		}
 	}
 
-
+	/**
+	* Selects the bookshelf item that was clicked
+	*/
 	public void selectBookshelfItem(int position) {
 		if (isOnline()){
 			try {
@@ -534,7 +555,9 @@ public class MainActivity extends Activity {
 			Toast.makeText(context,"Þú ert ekki nettengdur!", Toast.LENGTH_SHORT).show();
 		}
 	}
-	
+	/**
+	* Opens corresponding pdf when button is pressed
+	*/
 	public void BookshelfButtonClick(View v) {
 	    int id = v.getId();
 	    Log.d("ListView Button click","id="+id);
@@ -555,7 +578,9 @@ public class MainActivity extends Activity {
 	    
 	}
 	
-	
+	/*
+	 * Makes the Delete buttons available
+	 */
 	public void DeleteButtonClick(View v) {
 	    final int id = v.getId();
 	    Log.d("Delete Button click","id="+id);
@@ -565,8 +590,10 @@ public class MainActivity extends Activity {
 	        public void onClick(DialogInterface dialog, int which) {
 	            switch (which){
 	            case DialogInterface.BUTTON_POSITIVE:
-	            	//delete buttons have an id a 1000 higher than the read buttons
-	            	//delta => difference in index between read and delete buttons
+	            	/*
+	            	 * delete buttons have an id a 1000 higher than the read buttons
+	            	 * delta => difference in index between read and delete buttons
+	            	 */
 	            	int delta = 1000;
 	            	int deleteButtonsLastPosition = (versionNames.length-1)+delta;
 	            	int deleteButtonChosenPosition = deleteButtonsLastPosition-id;
@@ -594,7 +621,9 @@ public class MainActivity extends Activity {
 	        .setNegativeButton("Hætta", dialogClickListener).show();  
 	}
 	
-	//Assign pdf file sizes to array from latest to newest
+	/*
+	 * Assign pdf file sizes to array from latest to newest
+	 */
 	public void getFileSizes(){
 		
 		versionsSizes = new int[versions.length()];
@@ -658,11 +687,16 @@ public class MainActivity extends Activity {
 		sizes.execute();
 	}
 	
-	
+	/*
+	 * Gets get function for the context in mainAcivity
+	 */
 	public static Context getAppContext() {
 	    return context;
 	}
-	
+	/*
+	 * If the download of the newest JSON does't work it will get the JSON file that is 
+	 * located in the internal storage of the phone  
+	 */
 	public Void JsonFallback(){
 		File jsonData = localstorage.getFile("data.json");
 		StringBuilder text = new StringBuilder();
@@ -693,7 +727,10 @@ public class MainActivity extends Activity {
 		}
 		return null;
 	}
-	
+	/*
+	 * If size of the PDF files cannot be assessed through the internet 
+	 * a file size should be kept in the internal storage 
+	 */
 	public void sizesFallback(){
 		for (int i=0; i < versions.length(); i++){
 			try{
@@ -708,7 +745,9 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-	
+	/*
+	 * Checks whether there is any connection available
+	 */
 	public boolean isOnline() {
 		    ConnectivityManager cm =
 		        (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

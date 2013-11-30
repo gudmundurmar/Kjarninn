@@ -2,6 +2,9 @@ package is.hi.hbv.kjarninn;
 
 import java.util.ArrayList;
 
+/**
+ * Create bookshelf model
+ */
 public class BookshelfModel {
 
     public static ArrayList<BookshelfItem> Items;
@@ -14,6 +17,9 @@ public class BookshelfModel {
 
     }
 
+    /**
+     * get bookshelf item by id
+     */
     public static BookshelfItem GetbyId(int id){
 
         for(BookshelfItem item : Items) {
@@ -24,6 +30,9 @@ public class BookshelfModel {
         return null;
     }
     
+    /**
+     * get the title of item in bookshelf by id
+     */
     public static String getTitle(int id){
         for(BookshelfItem item : Items) {
             if (item.Id == id) {
@@ -42,6 +51,9 @@ public class BookshelfModel {
         return null;
     }
     
+    /**
+     * get the thumbnail url of item in bookshelf by id
+     */
     public static String getThumbUrl(int id){
         for(BookshelfItem item : Items) {
             if (item.Id == id) {
@@ -51,6 +63,9 @@ public class BookshelfModel {
         return null;
     }
     
+    /**
+     * get the headline of item in bookshelf by id
+     */
     public static String getHeadline(int id){
         for(BookshelfItem item : Items) {
             if (item.Id == id) {
@@ -60,6 +75,9 @@ public class BookshelfModel {
         return null;
     }
     
+    /**
+     * get the date of item in bookshelf by id
+     */
     public static String getDate(int id){
         for(BookshelfItem item : Items) {
             if (item.Id == id) {
@@ -69,6 +87,9 @@ public class BookshelfModel {
         return null;
     }
     
+    /**
+     * get the button text of item in bookshelf by id
+     */
     public static String getButtonText(int id){
         for(BookshelfItem item : Items) {
             if (item.Id == id) {
