@@ -104,9 +104,6 @@ public class MainActivity extends Activity {
 		TDD tdd = new TDD();
 		tdd.testSharedPrefsInt();
 		tdd.testSharedPrefsString();
-		
-		//Asserting if versions is not null
-		Assert.assertNotNull(versions);
     }
 
 	
@@ -264,7 +261,9 @@ public class MainActivity extends Activity {
         return true;
     }
     public boolean onOptionsItemSelected(MenuItem item) {
-    	mDrawerLayout.openDrawer(navbarListView);
+    	if (mDrawerLayout.isDrawerOpen(navbarListView))
+    	mDrawerLayout.closeDrawer(navbarListView);
+    	else mDrawerLayout.openDrawer(navbarListView);
     	return true;
     		
     	
@@ -465,19 +464,21 @@ public class MainActivity extends Activity {
 		        	OpenPDF(lastopened);	
 	        	}
 	        	break;
-			case 1:
-				//Bladahilla
-				Log.d("Navbar Click","Item 1");
+			case 3:
+				//Upplýsingar
+				Log.d("Navbar Click","Item 3");
+		    	Intent browserIntent_toUpplysingar = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.com/info"));
+				startActivity(browserIntent_toUpplysingar);
 		        break;
-		    case 2:
-		    	//Hjalp
-		    	Log.d("Navbar Click","Item 2");
+		    case 1:
+		    	//Kjarnaofninn
+		    	Log.d("Navbar Click","Item 1");
 		    	Intent browserIntent_toOfninn = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kjarnaofninn"));
 				startActivity(browserIntent_toOfninn);
 		        break;
-			case 3:
-				//A vefnum
-				Log.d("Navbar Click","Item 3");
+			case 2:
+				//Pistlar
+				Log.d("Navbar Click","Item 2");
 				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/#pistlar"));
 				startActivity(browserIntent_toSite);
 		        break;
