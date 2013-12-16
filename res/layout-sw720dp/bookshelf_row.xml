@@ -7,8 +7,8 @@
  
     <ImageView
         android:id="@+id/thumbnail"
-        android:layout_width="195dp"
-        android:layout_height="260dp"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:paddingLeft="20dp"
@@ -66,28 +66,28 @@
     
     <ImageButton 
         android:id="@+id/bookButton"
-        android:layout_marginTop="140dip"
+        android:layout_marginTop="85dip"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="10dip"
+        android:layout_marginRight="20dip"
         android:background="@android:color/transparent"
-        android:layout_width="140dp"
-        android:layout_height="60dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:visibility="visible"
         android:src="@drawable/deletebutton"
-        android:scaleType="centerInside"
+        android:scaleType="fitEnd"
         android:onClick="BookshelfButtonClick"/>
     
     <ImageButton 
         android:id="@+id/deleteButton"
-        android:layout_marginTop="50dip"
-        android:layout_marginRight="10dip"
+        android:layout_marginTop="10dip"
+        android:layout_marginRight="20dip"
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent"
-        android:layout_width="140dp"
-        android:layout_height="60dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:visibility="gone"
         android:src="@drawable/deletebutton"
-        android:scaleType="centerInside"
+        android:scaleType="fitEnd"
         android:onClick="DeleteButtonClick"/>
     	
  

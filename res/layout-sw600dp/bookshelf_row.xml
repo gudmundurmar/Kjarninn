@@ -66,28 +66,28 @@
     
     <ImageButton 
         android:id="@+id/bookButton"
-        android:layout_marginTop="75dip"
+        android:layout_marginTop="65dip"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="10dip"
+        android:layout_marginRight="15dip"
         android:background="@android:color/transparent"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:visibility="visible"
         android:src="@drawable/deletebutton"
-        android:scaleType="centerInside"
+        android:scaleType="fitEnd"
         android:onClick="BookshelfButtonClick"/>
     
     <ImageButton 
         android:id="@+id/deleteButton"
-        android:layout_marginTop="10dip"
+        android:layout_marginTop="5dip"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="10dip"
+        android:layout_marginRight="15dip"
         android:background="@android:color/transparent"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:visibility="gone"
         android:src="@drawable/deletebutton"
-        android:scaleType="centerInside"
+        android:scaleType="fitEnd"
         android:onClick="DeleteButtonClick"/>
     	
  
