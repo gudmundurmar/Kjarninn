@@ -2,6 +2,8 @@ package is.hi.hbv.kjarninn;
 
 import java.util.ArrayList;
 
+import android.graphics.drawable.Drawable;
+
 /**
  * Create bookshelf model
  */
@@ -106,6 +108,22 @@ public class BookshelfModel {
             }
         }
         return null;
+    }
+    
+    public static int getButtonIcon(int id){
+        for(BookshelfItem item : Items) {
+            if (item.Id == id) {
+                String text = getButtonText(id);
+                if (text.equals("Lesa")){
+                	return R.drawable.readbutton;
+             
+                }
+                else{
+                	return R.drawable.downloadbutton;
+                }
+            }
+        }
+        return -1;	
     }
 
 }

@@ -2,19 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:minHeight="50dp"
+    android:minHeight="200dp"
     android:orientation="horizontal" >
  
     <ImageView
         android:id="@+id/thumbnail"
-        android:layout_width="70dp"
-        android:layout_height="90dp"
+        android:layout_width="195dp"
+        android:layout_height="260dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="20dp"
         android:scaleType="fitXY" />
  
     <TextView
@@ -23,15 +23,16 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/thumbnail"
         android:paddingLeft="10dp"
-        android:paddingTop="5dp"
+        android:paddingTop="15dp"
         android:text=""
         android:textColor="#FFFFFF"
         android:textStyle="bold"
+        android:textSize="25sp"
         android:typeface="sans" />
  
     <TextView
         android:id="@+id/headline"
-        android:layout_width="250dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
         android:layout_marginTop="5dip"
@@ -39,7 +40,7 @@
         android:paddingLeft="10dp"
         android:text=""
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="17sp" />
  
     <TextView
         android:id="@+id/date"
@@ -47,10 +48,10 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/title"
         android:paddingLeft="5dp"
-        android:paddingTop="7dp"
+        android:paddingTop="23dp"
         android:text=""
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="16sp" />
     
     <ProgressBar
         android:id="@+id/progressbar"
@@ -65,25 +66,25 @@
     
     <ImageButton 
         android:id="@+id/bookButton"
-        android:layout_marginTop="40dip"
+        android:layout_marginTop="140dip"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dip"
         android:background="@android:color/transparent"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
         android:visibility="visible"
-        android:src="@drawable/downloadbutton"
+        android:src="@drawable/deletebutton"
         android:scaleType="centerInside"
         android:onClick="BookshelfButtonClick"/>
     
     <ImageButton 
         android:id="@+id/deleteButton"
-        android:layout_marginTop="3dip"
-        android:layout_alignParentRight="true"
+        android:layout_marginTop="50dip"
         android:layout_marginRight="10dip"
+        android:layout_alignParentRight="true"
         android:background="@android:color/transparent"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="140dp"
+        android:layout_height="60dp"
         android:visibility="gone"
         android:src="@drawable/deletebutton"
         android:scaleType="centerInside"

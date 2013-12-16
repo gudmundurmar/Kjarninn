@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -64,8 +65,8 @@ public class BookshelfAdapter extends BaseAdapter {
             holder.headline = (TextView) convertView.findViewById(R.id.headline);
             holder.date = (TextView) convertView.findViewById(R.id.date);
             holder.thumbnail = (ImageView) convertView.findViewById(R.id.thumbnail);
-            holder.button = (Button) convertView.findViewById(R.id.bookButton);
-            holder.deleteButton = (Button) convertView.findViewById(R.id.deleteButton);
+            holder.button = (ImageButton) convertView.findViewById(R.id.bookButton);
+            holder.deleteButton = (ImageButton) convertView.findViewById(R.id.deleteButton);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -75,7 +76,8 @@ public class BookshelfAdapter extends BaseAdapter {
         holder.headline.setText(BookshelfModel.getHeadline(position));
         holder.date.setText("- "+BookshelfModel.getDate(position));
         holder.button.setId(position);
-        holder.button.setText(BookshelfModel.getButtonText(position));
+        //holder.button.setText(BookshelfModel.getButtonText(position));
+        holder.button.setImageResource(BookshelfModel.getButtonIcon(position));
         holder.deleteButton.setId(position+1000);
         
         if (BookshelfModel.showDelete(position)){
@@ -105,8 +107,8 @@ public class BookshelfAdapter extends BaseAdapter {
         TextView date;
         ImageView thumbnail;
         ProgressBar progressBar;
-        Button button;
-        Button deleteButton;
+        ImageButton button;
+        ImageButton deleteButton;
         
     }
 }
