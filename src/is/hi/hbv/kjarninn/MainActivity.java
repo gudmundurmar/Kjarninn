@@ -562,8 +562,8 @@ public class MainActivity extends Activity {
 	public void BookshelfButtonClick(View v) {
 	    int id = v.getId();
 	    Log.d("ListView Button click","id="+id);
-	    Button button = (Button) v.findViewById(id);
-	    String buttontext = button.getText().toString();
+	    ImageButton button = (ImageButton) v.findViewById(id);
+	    String buttontext = button.getTag().toString();
 	    int lastpos = versionNames.length-1;
 	    int fileposition = lastpos-id;
 	    String selectedFilename = versionNames[fileposition];
