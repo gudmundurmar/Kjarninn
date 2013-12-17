@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -27,6 +28,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -293,7 +296,15 @@ public class MainActivity extends Activity {
 	        Log.d("OpenPDF checking path",newUri.toString());
 	        intent.setDataAndType(newUri,"application/pdf");
 	        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-	        startActivity(intent);
+	        
+	        PackageManager manager = context.getPackageManager();
+	        List<ResolveInfo> infos = manager.queryIntentActivities(intent, 0);
+	            if (infos.size() > 0) {
+	            	startActivity(intent);
+	            }else{
+	            	Toast.makeText(context,"Enginn PDF lesari til staðar", Toast.LENGTH_SHORT).show();
+	            }
+	        
         }
         catch (Exception e) 
         {
