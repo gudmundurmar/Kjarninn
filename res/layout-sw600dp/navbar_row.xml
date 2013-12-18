@@ -8,20 +8,24 @@
 
     <ImageView
             android:id="@+id/NavbarimageView"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="54dp"
+            android:layout_height="54dp"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="15dp"
-            android:layout_alignParentTop="true"/>
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentTop="true"
+            android:scaleType="fitXY" />
+    
     <TextView
             android:layout_alignBottom="@+id/imageView"
-            android:layout_width="97dp"
-            android:layout_height="32dp"
+            android:layout_width="400dp"
+            android:layout_height="100dp"
             android:id="@+id/NavbartextView"
             android:textColor="#FFFFFF"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="66dp"
+            android:layout_marginLeft="100dp"
             android:layout_alignParentRight="true"
-            android:gravity="center_vertical"/>
+            android:gravity="center_vertical"
+            android:textSize="17sp"/>
 
 </RelativeLayout>
