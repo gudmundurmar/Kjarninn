@@ -374,7 +374,7 @@ public class MainActivity extends Activity {
 		for (int i = versions.length(); i > 0; --i) {
 			JSONObject version = versions.getJSONObject(i-1);
 			BookshelfModel.Items.add(new BookshelfItem(id,version.getString("version"), 
-					version.getString("imageurl"), version.getString("name"), 
+					version.getString("imageurl"), version.getString("version")+". útgáfa", 
 					version.getString("headline"), version.getString("date"), "Sækja", false));
 			id++;
 		}
