@@ -14,7 +14,6 @@
             android:layout_marginLeft="15dp"
             android:layout_alignParentTop="true"/>
     <TextView
-            android:layout_alignBottom="@+id/imageView"
             android:layout_toRightOf="@id/NavbarimageView"
             android:layout_width="97dp"
             android:layout_height="32dp"

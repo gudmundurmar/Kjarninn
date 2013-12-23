@@ -17,7 +17,6 @@
             android:scaleType="fitXY" />
     
     <TextView
-            android:layout_alignBottom="@+id/imageView"
             android:layout_width="400dp"
             android:layout_height="100dp"
             android:id="@+id/NavbartextView"
