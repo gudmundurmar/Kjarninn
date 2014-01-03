@@ -47,7 +47,6 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
     	if (isFileNameInLocalstorage){
     		File thumb = localstorage.getFile(thumbName);
     		String path = thumb.getPath();
-    		//Log.d("Getting bitmap form path...", path);
     		Bitmap bMap = BitmapFactory.decodeFile(path);
     		return bMap;
     	}
@@ -103,8 +102,6 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
             HttpResponse response = client.execute(getRequest);
             final int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode != HttpStatus.SC_OK) {
-                Log.w("ImageDownloader", "Error " + statusCode
-                        + " while retrieving bitmap from " + url);
                 return null;
             }
  
@@ -118,7 +115,6 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
                     try {
                     	Context context = MainActivity.getAppContext();
                     	String path = context.getFilesDir().getAbsolutePath()+"/thumb"+version+".jpg";
-                    	//Log.d("Saving file to path..",path);
                     	FileOutputStream fos = context.openFileOutput("thumb"+version+".jpg", Context.MODE_PRIVATE);
                     	File thumb = new File(path);
                     	thumb.setReadable(true, false);
@@ -139,7 +135,6 @@ class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
             // Could provide a more explicit error message for IOException or
             // IllegalStateException
             getRequest.abort();
-            Log.w("ImageDownloader", "Error while retrieving bitmap from " + url);
         } finally {
             if (client != null) {
                 client.close();

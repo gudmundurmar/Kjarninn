@@ -99,15 +99,7 @@ public class MainActivity extends Activity {
         navbarListView.setAdapter(NavAdapter); //
 
         navbarListView.setOnItemClickListener(new DrawerItemClickListener());
-        
-        Log.d("Getting","Json");
-        Log.d("isOnline:",Boolean.toString(isOnline()));
         getJson();
-        
-        //Tests
-		TDD tdd = new TDD();
-		tdd.testSharedPrefsInt();
-		tdd.testSharedPrefsString();
     }
 
 	
@@ -143,7 +135,6 @@ public class MainActivity extends Activity {
 				long correctPdfSize = 0;
 				
 				for (int j=0; j<versionNames.length; j++){
-					Log.d(namePdf,versionNames[j]+"_//_"+ Integer.toString(versionsSizes[j]));
 					if (namePdf.equals(versionNames[j])){
 						correctPdfSize = versionsSizes[j];
 					}
@@ -154,7 +145,6 @@ public class MainActivity extends Activity {
 				boolean[] localCheckResult = localstorage.isInLocal(namePdf,correctPdfSize);
 				
 				if (localCheckResult[0] && localCheckResult[1]){
-						Log.d("Correct file exists","Cancelling download");
 						cancel(true);
 				}
 				
@@ -165,7 +155,6 @@ public class MainActivity extends Activity {
 					String urlToPdf = savePdfAs[0];
 	                FileOutputStream fileOutputStream = openFileOutput(namePdf, Context.MODE_PRIVATE);//
 	                String pathRootInternalMemory = getFilesDir().getAbsolutePath() + "/" + namePdf; // path to the root of internal memory.
-	                Log.d("Saving to path:",pathRootInternalMemory);
 	                File f = new File(pathRootInternalMemory);
 	                f.setReadable(true, false);
 	                URL url = new URL(urlToPdf);
@@ -180,7 +169,6 @@ public class MainActivity extends Activity {
 	
 	                
 	                int file_size = connection.getContentLength();
-	                Log.d("Download: file_size", Integer.toString(file_size));
 	                input = connection.getInputStream();
 	                
 	                byte[] buffer = new byte[1024];
@@ -205,7 +193,6 @@ public class MainActivity extends Activity {
                 
             } 
             catch (Exception e) {
-            	Log.e("Something broke while fetching PDF", e.toString());
             }
 			finally {
                 try {
@@ -293,7 +280,6 @@ public class MainActivity extends Activity {
 	        Intent intent = new Intent(Intent.ACTION_VIEW);
 	        String uri = (Uri.fromFile(filz)).toString();
 	        Uri newUri = Uri.parse(uri);
-	        Log.d("OpenPDF checking path",newUri.toString());
 	        intent.setDataAndType(newUri,"application/pdf");
 	        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 	        
@@ -308,7 +294,6 @@ public class MainActivity extends Activity {
         }
         catch (Exception e) 
         {
-        	Log.e("Something went wrong!", "Error log below:");
         	
         }  
     }
@@ -331,7 +316,6 @@ public class MainActivity extends Activity {
 				if (isOnline()){
 					try {
 						JSONObject json = getJson("http://kjarninn.com/json");
-						Log.d("test", "Finished fetching JSON: ");
 						
 						versions = json.getJSONArray("versions");
 						Assert.assertNotNull(versions);
@@ -339,12 +323,10 @@ public class MainActivity extends Activity {
 						return null;
 					}
 					catch (Exception e) {
-						Log.e("Error in getJson","");
 						
 					}
 				}
 				else {
-					Log.e("Entering JsonFallback",".");
 					JsonFallback();
 					return null;
 				}
@@ -353,7 +335,6 @@ public class MainActivity extends Activity {
 			
 		    @Override
 		    protected void onPostExecute(Void v) {
-		    	Log.d("Entering Post", "Post");
 		    	try{
 		    		LoadBooks();
 		    	}
@@ -387,18 +368,13 @@ public class MainActivity extends Activity {
 	/*
 	 * Updates Bookshelf ListView, changes buttons and buttonOnclickListeners
 	 */
-	private void UpdateView() {	
-		Log.d("Entering","UpdateView()");
-		Log.e("Radom tests","");
-		Log.e("VersionNames[3]",versionNames[3]);
-		Log.e("VersionSizes[3]",Integer.toString(versionsSizes[3]));
+	private void UpdateView() {
 		int downCounter = versionNames.length;
 		for (int upCounter = 0; upCounter < versionNames.length; ++upCounter) {
 			--downCounter;
 			boolean[] localResult = localstorage.isInLocal(versionNames[downCounter],versionsSizes[downCounter]);//down
 			BookshelfItem item = BookshelfModel.GetbyId(upCounter);//up
 			if (localResult[0] && localResult[1]){
-				Log.d("This PDF is ready in local:",versionNames[downCounter]);//down
 				//Change Model values
 				item.Buttontext = "Lesa";
 				item.Showdelete = true;		
@@ -417,7 +393,6 @@ public class MainActivity extends Activity {
 	 */
 	public static JSONObject getJson(String url){
 
-		Log.d("test", "Starting to get JSON");
 		InputStream is = null;
 		String result = "";
 		JSONObject jsonObject = null;
@@ -429,9 +404,7 @@ public class MainActivity extends Activity {
 			HttpResponse response = httpclient.execute(httppost);
 			HttpEntity httpEntity = response.getEntity();
 			is = httpEntity.getContent();
-			Log.d("test", "JSON loaded");
 		} catch(Exception e) {
-			Log.d("test", "Error loading JSON");
 			return null;
 		}
 
@@ -449,17 +422,13 @@ public class MainActivity extends Activity {
 			localstorage.writeToFile(result,"data.json");
 			
 		} catch(Exception e) {
-			Log.d("test", "Error reading JSON");
 			return null;
 		}
 
 		// Convert string to object
 		try {
-			jsonObject = new JSONObject(result); 
-			Log.d("test", "JSON string has been converted to an Object");            
-		} catch(JSONException e) {
-			Log.d("test", "Failed to convert string to JSON"); 
-			Log.d("test", e.toString());   
+			jsonObject = new JSONObject(result);            
+		} catch(JSONException e) { 
 			return null;
 		}
 
@@ -484,7 +453,6 @@ public class MainActivity extends Activity {
 		switch(position) {
 			case 0:
 				//I lestri
-				Log.d("Navbar Click","Item 0");
 				sharedprefs shpref = new sharedprefs();
 	        	String last = shpref.getPrefString("lastopened","error");
 	        	if (last.equals("error")){
@@ -497,19 +465,16 @@ public class MainActivity extends Activity {
 	        	break;
 			case 3:
 				//Upplýsingar
-				Log.d("Navbar Click","Item 3");
 		    	Intent browserIntent_toUpplysingar = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.com/info"));
 				startActivity(browserIntent_toUpplysingar);
 		        break;
 		    case 1:
 		    	//Kjarnaofninn
-		    	Log.d("Navbar Click","Item 1");
 		    	Intent browserIntent_toOfninn = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/kjarnaofninn"));
 				startActivity(browserIntent_toOfninn);
 		        break;
 			case 2:
 				//Pistlar
-				Log.d("Navbar Click","Item 2");
 				Intent browserIntent_toSite = new Intent(Intent.ACTION_VIEW, Uri.parse("http://kjarninn.is/#pistlar"));
 				startActivity(browserIntent_toSite);
 		        break;
@@ -524,7 +489,6 @@ public class MainActivity extends Activity {
 		if (isOnline()){
 			try {
 				JSONObject version = versions.getJSONObject(position);
-				Log.d("Selected Bookshelf Item", version.getString("pdfurl"));
 				
 				// this needs to be bound to a button instead of calling it here
 				//
@@ -551,7 +515,6 @@ public class MainActivity extends Activity {
 				    }
 				});	
 				
-				Log.d("Starting Download",nafn);
 				
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 				    download.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, downloads);
@@ -560,7 +523,6 @@ public class MainActivity extends Activity {
 			} 
 			catch (JSONException e) {
 				// TODO Auto-generated catch block
-				Log.e("Error in getJson","");
 			}
 		}
 		else{
@@ -572,7 +534,6 @@ public class MainActivity extends Activity {
 	*/
 	public void BookshelfButtonClick(View v) {
 	    int id = v.getId();
-	    Log.d("ListView Button click","id="+id);
 	    ImageButton button = (ImageButton) v.findViewById(id);
 	    String buttontext = button.getTag().toString();
 	    int lastpos = versionNames.length-1;
@@ -595,7 +556,6 @@ public class MainActivity extends Activity {
 	 */
 	public void DeleteButtonClick(View v) {
 	    final int id = v.getId();
-	    Log.d("Delete Button click","id="+id);
 	    
 	    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 	        @Override
@@ -609,7 +569,6 @@ public class MainActivity extends Activity {
 	            	int delta = 1000;
 	            	int deleteButtonsLastPosition = (versionNames.length-1)+delta;
 	            	int deleteButtonChosenPosition = deleteButtonsLastPosition-id;
-	                Log.d("Deleting...",versionNames[deleteButtonChosenPosition]);
 	            	File dir = getFilesDir();
 	            	File file = new File(dir, versionNames[deleteButtonChosenPosition]);
 	            	localstorage.deleteFromLocal(file);
@@ -676,12 +635,10 @@ public class MainActivity extends Activity {
 						    //Critical þarf að laga ef ekki nettenging   
 						}
 						catch (Exception e){
-							Log.e("Error in GetFileSizes","");
 						}
 					}
 				}
 				else{
-					Log.e("Entering sizesFallback",".");
 					sizesFallback();
 				}
 				return null;
@@ -731,11 +688,9 @@ public class MainActivity extends Activity {
 		try{
 			JSONObject json = new JSONObject(result);
 			versions = json.getJSONArray("versions");
-			Log.e("Loaded json backup",".");
 			
 		}
 		catch (Exception e){
-			Log.e("Error in JsonFallback",".");
 		}
 		return null;
 	}
@@ -752,7 +707,6 @@ public class MainActivity extends Activity {
 			    versionsSizes[i] = file_size;  
 			}
 			catch (Exception e){
-				Log.e("Error in sizesFallback",".");
 				e.printStackTrace();
 			}
 		}
